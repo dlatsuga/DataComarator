@@ -59,7 +59,7 @@
     <bottom>
         <AnchorPane prefHeight="164.0" prefWidth="974.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="lblChoosenTable" layoutX="55.0" layoutY="32.0" prefHeight="20.0" prefWidth="50.0" text="Label" />
+            <Label fx:id="lblChoosenTable" layoutX="55.0" layoutY="32.0" prefHeight="20.0" prefWidth="335.0" text="Label" />
          </children></AnchorPane>
     </bottom>
     <left>

@@ -3,6 +3,7 @@ package controller;
 import exceptions.ConnectionRefusedException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -44,6 +45,9 @@ public class MainController {
     private TableColumn<TableDescription, Integer> columnRecordCnt;
 
     @FXML
+    private Label lblChoosenTable;
+
+    @FXML
     public void initialize() throws ConnectionRefusedException {
         columnSchema.setCellValueFactory(new PropertyValueFactory<DataBaseTable, String>("schema"));
         columnObjectName.setCellValueFactory(new PropertyValueFactory<DataBaseTable, String>("name"));
@@ -58,12 +62,24 @@ public class MainController {
         columnRecordCnt.setCellValueFactory(new PropertyValueFactory<TableDescription, Integer>("recordsCount"));
 
         tableTableDescription.setItems(mainService.getTableDescriptionForView());
+
+        initListeners();
     }
 
     public void setMainStage(Stage mainStage) {
         this.mainStage = mainStage;
     }
 
+    private void initListeners() {
+//        tableDBObjects.getSelectionModel().selectedItemProperty().addListener((changed, oldVal, newVal) -> lblChoosenTable.setText("Table " + newVal.));
 
+        tableDBObjects.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            //Check whether item is selected and set value of selected item to Label
+            if (tableDBObjects.getSelectionModel().getSelectedItem() != null &&
+                    tableDBObjects.getSelectionModel().getSelectedItem() instanceof DataBaseTable ) {
+                lblChoosenTable.setText(((DataBaseTable) newValue).getObjectKey());
+            }
+        });
+    }
 
 }

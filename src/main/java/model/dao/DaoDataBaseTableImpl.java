@@ -2,10 +2,8 @@ package model.dao;
 
 import model.domain.DataBaseTable;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DaoDataBaseTableImpl implements DaoDataBaseTable {
@@ -19,15 +17,15 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
     public DataBaseTable findTableByName(String schema, String tableName) {
         /*String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? and table_name = ?";*/
         String sql =
-                "        Select\n" +
+                        "Select\n" +
                         "        tt.table_schema\n" +
-                        "                ,tt.table_name\n" +
-                        "                ,count(cc.column_name) fields_cnt\n" +
-                        "        from information_schema.tables tt\n" +
-                        "        left join information_schema.columns cc on tt.table_schema = cc.table_schema\n" +
-                        "        and tt.table_name = cc.table_name\n" +
-                        "        where tt.table_schema = ? and tt.table_name = ?\n" +
-                        "        group by tt.table_schema, tt.table_name";
+                        "        ,tt.table_name\n" +
+                        "        ,count(cc.column_name) fields_cnt\n" +
+                        "from information_schema.tables tt\n" +
+                        "left join information_schema.columns cc on tt.table_schema = cc.table_schema\n" +
+                        "     and tt.table_name = cc.table_name\n" +
+                        "where tt.table_schema = ? and tt.table_name = ?\n" +
+                        "group by tt.table_schema, tt.table_name";
         try {
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1,schema);
@@ -42,7 +40,33 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
     }
 
     public List<DataBaseTable> findAllTablesOfVnT() {
-        return null;
+        List<DataBaseTable> listOfTables = new ArrayList<DataBaseTable>();
+        String sql =
+                "Select\n" +
+                "        tt.table_schema\n" +
+                "        ,tt.table_name\n" +
+                "        ,count(cc.column_name) fields_cnt\n" +
+                "from information_schema.tables tt\n" +
+                "left join information_schema.columns cc on tt.table_schema = cc.table_schema\n" +
+                "     and tt.table_name = cc.table_name\n" +
+                "Where tt.table_schema in ('public', 'test')\n" +
+                "group by tt.table_schema, tt.table_name";
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            DataBaseTable dataBaseTable = null;
+
+            while(resultSet.next()){
+                dataBaseTable = new DataBaseTable(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3));
+                listOfTables.add(dataBaseTable);
+            }
+            return listOfTables;
+        } catch (SQLException e) {
+            return null;
+        }
+
+
     }
 
     public void close() {

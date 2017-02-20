@@ -3,7 +3,7 @@ package model.domain;
 public class DataBaseTable {
     private String schema;
     private String name;
-    private double size;
+    private int size;
     private int fieldsCount;
     private int rowsCount;
 
@@ -30,10 +30,10 @@ public class DataBaseTable {
     public void setName(String name) {
         this.name = name;
     }
-    public double getSize() {
+    public int getSize() {
         return size;
     }
-    public void setSize(double size) {
+    public void setSize(int size) {
         this.size = size;
     }
     public int getFieldsCount() {

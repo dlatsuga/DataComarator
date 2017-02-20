@@ -1,36 +1,37 @@
+import controller.MainController;
 import exceptions.ConnectionRefusedException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("view/sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 1000, 700));
+        //Parent root = FXMLLoader.load(getClass().getResource("view/sample.fxml"));
+
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("view/sample.fxml"));
+        Parent fxmlMain = fxmlLoader.load();
+
+        MainController mainController = fxmlLoader.getController();
+        mainController.setMainStage(primaryStage);
+
+        primaryStage.setTitle("V&T DataBase Comparator");
+        primaryStage.setScene(new Scene(fxmlMain, 1000, 700));
+
+            Image applicationMainIcon = new Image(getClass().getResourceAsStream("icon/Main.png"));
+            primaryStage.getIcons().add(applicationMainIcon);
+
         primaryStage.show();
     }
-
 
     public static void main(String[] args) throws ConnectionRefusedException {
         launch(args);
 
-//        DaoFactory daoFactory = DaoFactory.getInstance();
-//        DaoDataBaseTable daoDataBaseTable = daoFactory.getDaoDataBaseTable();
-
-//        DataBaseTable dataBaseTable = daoDataBaseTable.findTableByName("public","pc");
-//        System.out.println("Name : " + dataBaseTable);
-
-//        List<DataBaseTable> listOfTables = daoDataBaseTable.findAllTablesOfVnT();
-//
-//        for (DataBaseTable table : listOfTables) {
-//            System.out.println(table);
-//        }
-//
-//        daoDataBaseTable.close();
     }
 }
+

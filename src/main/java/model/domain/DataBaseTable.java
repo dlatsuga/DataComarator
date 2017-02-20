@@ -1,6 +1,9 @@
 package model.domain;
 
 public class DataBaseTable {
+
+    private String objectKey;
+
     private String schema;
     private String name;
     private int size;
@@ -11,11 +14,19 @@ public class DataBaseTable {
     }
 
     public DataBaseTable(String schema, String name, int fieldsCount) {
+        this.objectKey = schema + name;
         this.schema = schema;
         this.name = name;
         this.size = 3;
         this.fieldsCount = fieldsCount;
         this.rowsCount = 5;
+    }
+
+    public String getObjectKey() {
+        return objectKey;
+    }
+    public void setObjectKey(String objectKey) {
+        this.objectKey = objectKey;
     }
 
     public String getSchema() {

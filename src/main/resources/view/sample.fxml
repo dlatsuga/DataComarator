@@ -11,19 +11,19 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="686.0" prefWidth="974.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
     <center>
-        <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <AnchorPane prefHeight="429.0" prefWidth="736.0" BorderPane.alignment="CENTER">
             <children>
-                <SplitPane dividerPositions="0.47380675203725264" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane dividerPositions="0.5768772348033373" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                             <children>
                                 <TableView fx:id="tableDBObjects" layoutX="-17.0" layoutY="7.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <columns>
-                                        <TableColumn fx:id="columnSchema" prefWidth="68.0" text="Schema" />
-                                        <TableColumn fx:id="columnObjectName" prefWidth="78.0" text="Table" />
-                                        <TableColumn fx:id="columnObjectSize" prefWidth="75.0" text="Size Mb" />
-                                        <TableColumn fx:id="columnFieldsCnt" prefWidth="75.0" text="Fileds #" />
-                                        <TableColumn fx:id="columnRowsCnt" prefWidth="75.0" text="Rows #" />
+                                        <TableColumn fx:id="columnSchema" prefWidth="-1.0" text="Schema" />
+                                        <TableColumn fx:id="columnObjectName" prefWidth="-1.0" text="Table" />
+                                        <TableColumn fx:id="columnObjectSize" prefWidth="-1.0" text="Size Mb" />
+                                        <TableColumn fx:id="columnFieldsCnt" prefWidth="-1.0" text="Fileds #" />
+                                        <TableColumn fx:id="columnRowsCnt" prefWidth="-1.0" text="Rows #" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -35,9 +35,9 @@
                             <children>
                                 <TableView fx:id="tableTableDescription" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <columns>
-                                        <TableColumn fx:id="columnFieldName" prefWidth="75.0" text="Field" />
-                                        <TableColumn fx:id="columnFieldType" prefWidth="75.0" text="Type" />
-                                        <TableColumn fx:id="columnRecordCnt" prefWidth="98.0" text="Unique data #" />
+                                        <TableColumn fx:id="columnFieldName" prefWidth="-1.0" text="Field" />
+                                        <TableColumn fx:id="columnFieldType" prefWidth="-1.0" text="Type" />
+                                        <TableColumn fx:id="columnRecordCnt" prefWidth="-1.0" text="Unique data #" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -63,6 +63,6 @@
          </children></AnchorPane>
     </bottom>
     <left>
-        <AnchorPane prefHeight="219.0" prefWidth="113.0" BorderPane.alignment="CENTER" />
+        <AnchorPane prefHeight="449.0" prefWidth="197.0" BorderPane.alignment="CENTER" />
     </left>
 </BorderPane>

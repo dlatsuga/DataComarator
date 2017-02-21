@@ -61,7 +61,8 @@ public class MainController {
         columnFieldType.setCellValueFactory(new PropertyValueFactory<TableDescription, String>("fieldType"));
         columnRecordCnt.setCellValueFactory(new PropertyValueFactory<TableDescription, Integer>("recordsCount"));
 
-        tableTableDescription.setItems(mainService.getTableDescriptionForView());
+//        tableTableDescription.setItems(mainService.getTableDescriptionForView());
+
 
         initListeners();
     }

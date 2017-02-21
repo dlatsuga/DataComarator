@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import service.MainService;
 
 public class Main extends Application {
 
@@ -30,7 +31,11 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) throws ConnectionRefusedException {
-        launch(args);
+//        launch(args);
+        MainService mainService = new MainService();
+
+
+        mainService.getHashMapOfTableDesc();
 
     }
 }

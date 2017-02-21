@@ -10,6 +10,7 @@ public class DaoFactory {
 
     private Connection conn;
     private DaoDataBaseTable daoDataBaseTable;
+    private DaoTableDescription daoTableDescription;
     private static DaoFactory instance;
 
     public DaoDataBaseTable getDaoDataBaseTable() {
@@ -17,6 +18,13 @@ public class DaoFactory {
             daoDataBaseTable = new DaoDataBaseTableImpl(conn);
         }
         return daoDataBaseTable;
+    }
+
+    public DaoTableDescription getDaoTableDescription() {
+        if (daoTableDescription == null) {
+            daoTableDescription = new DaoTableDescriptionImpl(conn);
+        }
+        return daoTableDescription;
     }
 
     private DaoFactory(Connection conn) {

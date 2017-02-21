@@ -1,12 +1,17 @@
 import controller.MainController;
 import exceptions.ConnectionRefusedException;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import model.domain.TableDescription;
 import service.MainService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Main extends Application {
 
@@ -31,12 +36,17 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) throws ConnectionRefusedException {
-//        launch(args);
-        MainService mainService = new MainService();
+        launch(args);
+//        MainService mainService = new MainService();
 
-
-        mainService.getHashMapOfTableDesc();
-
+//        HashMap<String, ObservableList<TableDescription>> hashMap = mainService.getHashMapOfTableDesc();
+//        for (Map.Entry entry : hashMap.entrySet()) {
+//            System.out.println("Key: " + entry.getKey());
+//            ObservableList<TableDescription> tableDescriptionList = (ObservableList<TableDescription>)entry.getValue();
+//            for (TableDescription tableDescription : tableDescriptionList) {
+//                System.out.println(tableDescription);
+//            }
+//        }
     }
 }
 

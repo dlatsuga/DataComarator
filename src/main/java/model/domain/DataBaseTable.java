@@ -13,8 +13,8 @@ public class DataBaseTable {
     public DataBaseTable() {
     }
 
-    public DataBaseTable(String schema, String name, int fieldsCount) {
-        this.objectKey = schema + name;
+    public DataBaseTable(String key, String schema, String name, int fieldsCount) {
+        this.objectKey = key;
         this.schema = schema;
         this.name = name;
         this.size = 3;

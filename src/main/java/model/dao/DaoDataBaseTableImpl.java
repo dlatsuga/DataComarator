@@ -18,6 +18,7 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
         /*String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? and table_name = ?";*/
         String sql =
                         "Select\n" +
+                        "        tt.table_schema || '_' || tt.table_name as table_key\n" +
                         "        tt.table_schema\n" +
                         "        ,tt.table_name\n" +
                         "        ,count(cc.column_name) fields_cnt\n" +
@@ -32,7 +33,7 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
             statement.setString(2,tableName);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next() ;
-            DataBaseTable dataBaseTable = new DataBaseTable(schema, tableName, resultSet.getInt(3));
+            DataBaseTable dataBaseTable = new DataBaseTable(resultSet.getString(1), schema, tableName, resultSet.getInt(4));
             return dataBaseTable;
         } catch (SQLException e) {
             return null;
@@ -43,7 +44,8 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
         List<DataBaseTable> listOfTables = new ArrayList<DataBaseTable>();
         String sql =
                 "Select\n" +
-                "        tt.table_schema\n" +
+                "        tt.table_schema || '_' || tt.table_name as table_key\n" +
+                "        ,tt.table_schema\n" +
                 "        ,tt.table_name\n" +
                 "        ,count(cc.column_name) fields_cnt\n" +
                 "from information_schema.tables tt\n" +
@@ -58,7 +60,7 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
             DataBaseTable dataBaseTable = null;
 
             while(resultSet.next()){
-                dataBaseTable = new DataBaseTable(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3));
+                dataBaseTable = new DataBaseTable(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getInt(4));
                 listOfTables.add(dataBaseTable);
             }
             return listOfTables;

@@ -1,6 +1,7 @@
 package controller;
 
 import exceptions.ConnectionRefusedException;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -78,7 +79,8 @@ public class MainController {
             //Check whether item is selected and set value of selected item to Label
             if (tableDBObjects.getSelectionModel().getSelectedItem() != null &&
                     tableDBObjects.getSelectionModel().getSelectedItem() instanceof DataBaseTable ) {
-                lblChoosenTable.setText(((DataBaseTable) newValue).getObjectKey());
+//                lblChoosenTable.setText(((DataBaseTable) newValue).getObjectKey());
+                tableTableDescription.setItems((ObservableList<TableDescription>)mainService.getHashMapOfTableDesc().get(((DataBaseTable) newValue).getObjectKey()));
             }
         });
     }

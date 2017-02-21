@@ -35,9 +35,13 @@ public class MainService {
         return daoDataBaseTable = daoFactory.getDaoDataBaseTable();
     }
 
-    public HashMap<String, ObservableList<TableDescription>> getHashMapOfTableDesc() throws ConnectionRefusedException {
-        if(descriptionHashMap != null) {
-            descriptionHashMap = convertListToHashMap();
+    public HashMap<String, ObservableList<TableDescription>> getHashMapOfTableDesc() {
+        if(descriptionHashMap == null) {
+            try {
+                descriptionHashMap = convertListToHashMap();
+            } catch (ConnectionRefusedException e) {
+                e.printStackTrace();
+            }
         }
        return descriptionHashMap;
     }

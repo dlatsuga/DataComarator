@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -49,20 +50,23 @@
                 </SplitPane>
             </children>
             <BorderPane.margin>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                <Insets bottom="15.0" left="10.0" right="15.0" top="10.0" />
             </BorderPane.margin>
         </AnchorPane>
     </center>
     <top>
-        <AnchorPane prefHeight="73.0" prefWidth="600.0" BorderPane.alignment="CENTER" />
-    </top>
-    <bottom>
-        <AnchorPane prefHeight="164.0" prefWidth="974.0" BorderPane.alignment="CENTER">
+        <AnchorPane prefHeight="145.0" prefWidth="760.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="lblChoosenTable" layoutX="55.0" layoutY="32.0" prefHeight="20.0" prefWidth="335.0" text="Label" />
+            <Button fx:id="btnLoadKey" layoutX="210.0" layoutY="33.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="84.0" text="Load Key" />
+            <Label fx:id="lblChoosenTable" layoutX="312.0" layoutY="36.0" prefHeight="20.0" prefWidth="335.0" text="Label" />
          </children></AnchorPane>
-    </bottom>
+    </top>
     <left>
-        <AnchorPane prefHeight="449.0" prefWidth="197.0" BorderPane.alignment="CENTER" />
+        <AnchorPane prefHeight="541.0" prefWidth="239.0" BorderPane.alignment="CENTER">
+         <children>
+            <RadioButton layoutX="77.0" layoutY="112.0" mnemonicParsing="false" text="RadioButton" />
+            <RadioButton layoutX="77.0" layoutY="175.0" mnemonicParsing="false" text="RadioButton" />
+            <RadioButton layoutX="77.0" layoutY="243.0" mnemonicParsing="false" text="RadioButton" />
+         </children></AnchorPane>
     </left>
 </BorderPane>

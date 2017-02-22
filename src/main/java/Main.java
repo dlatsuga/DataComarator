@@ -37,16 +37,7 @@ public class Main extends Application {
 
     public static void main(String[] args) throws ConnectionRefusedException {
         launch(args);
-//        MainService mainService = new MainService();
 
-//        HashMap<String, ObservableList<TableDescription>> hashMap = mainService.getHashMapOfTableDesc();
-//        for (Map.Entry entry : hashMap.entrySet()) {
-//            System.out.println("Key: " + entry.getKey());
-//            ObservableList<TableDescription> tableDescriptionList = (ObservableList<TableDescription>)entry.getValue();
-//            for (TableDescription tableDescription : tableDescriptionList) {
-//                System.out.println(tableDescription);
-//            }
-//        }
     }
 }
 

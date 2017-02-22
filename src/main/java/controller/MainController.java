@@ -2,25 +2,36 @@ package controller;
 
 import exceptions.ConnectionRefusedException;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+
+import javafx.geometry.Pos;
 
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.domain.DataBaseTable;
 import model.domain.TableDescription;
 import service.MainService;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import org.controlsfx.control.ListSelectionView;
+
+import java.io.IOException;
 
 public class MainController {
 
     private MainService mainService = new MainService();
     private Stage mainStage;
+
+    private FXMLLoader fxmlLoader = new FXMLLoader();
+    private Parent fxmlKeySelector;
+    private KeySelectorController keySelectorController;
+    private Stage keySelectorStage;
 
     @FXML
     private TableView tableDBObjects;
@@ -36,7 +47,7 @@ public class MainController {
     @FXML
     private TableColumn<DataBaseTable, Integer> columnFieldsCnt;
     @FXML
-    private TableColumn<DataBaseTable, Integer>  columnRowsCnt;
+    private TableColumn<DataBaseTable, Integer> columnRowsCnt;
 
     @FXML
     private TableColumn<TableDescription, String> columnFieldName;
@@ -47,6 +58,7 @@ public class MainController {
 
     @FXML
     private Label lblChoosenTable;
+
 
     @FXML
     public void initialize() throws ConnectionRefusedException {
@@ -66,6 +78,7 @@ public class MainController {
 
 
         initListeners();
+        initLoader();
     }
 
     public void setMainStage(Stage mainStage) {
@@ -78,11 +91,66 @@ public class MainController {
         tableDBObjects.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             //Check whether item is selected and set value of selected item to Label
             if (tableDBObjects.getSelectionModel().getSelectedItem() != null &&
-                    tableDBObjects.getSelectionModel().getSelectedItem() instanceof DataBaseTable ) {
+                    tableDBObjects.getSelectionModel().getSelectedItem() instanceof DataBaseTable) {
 //                lblChoosenTable.setText(((DataBaseTable) newValue).getObjectKey());
-                tableTableDescription.setItems((ObservableList<TableDescription>)mainService.getHashMapOfTableDesc().get(((DataBaseTable) newValue).getObjectKey()));
+                tableTableDescription.setItems((ObservableList<TableDescription>) mainService.getHashMapOfTableDesc().get(((DataBaseTable) newValue).getObjectKey()));
             }
         });
     }
+
+    private void initLoader() {
+        try {
+            fxmlLoader.setLocation(getClass().getResource("../view/keyselector.fxml"));
+            fxmlKeySelector = fxmlLoader.load();
+            keySelectorController = fxmlLoader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void actionButtonPressed(ActionEvent actionEvent) {
+
+        Object source = actionEvent.getSource();
+        // если нажата не кнопка - выходим из метода
+        if (!(source instanceof Button)) {return;}
+
+        Button clickedButton = (Button) source;
+
+        switch (clickedButton.getId()) {
+            case "btnLoadKey":
+                showDialog();
+                break;
+        }
+    }
+
+    private void showDialog() {
+
+        if (keySelectorStage == null) {
+            keySelectorStage = new Stage();
+            keySelectorStage.setTitle("Choose Key");
+            keySelectorStage.setMinHeight(275);
+            keySelectorStage.setMinWidth(400);
+            keySelectorStage.setResizable(false);
+            keySelectorStage.setScene(new Scene(fxmlKeySelector));
+
+            ListSelectionView<String> view = new ListSelectionView<>();
+            view.getSourceItems().addAll("Katja", "Dirk", "Philip", "Jule", "Armin");
+
+            ((GridPane)keySelectorStage.getScene().getRoot()).add(view, 0, 0);
+            ((GridPane)keySelectorStage.getScene().getRoot()).setAlignment(Pos.CENTER);
+
+
+
+
+
+            keySelectorStage.initModality(Modality.WINDOW_MODAL);
+            keySelectorStage.initOwner(mainStage);
+        }
+
+        keySelectorStage.showAndWait(); // для ожидания закрытия окна
+
+    }
+
+
 
 }

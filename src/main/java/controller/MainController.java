@@ -1,6 +1,8 @@
 package controller;
 
 import exceptions.ConnectionRefusedException;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +14,6 @@ import javafx.scene.control.*;
 import javafx.geometry.Pos;
 
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.domain.DataBaseTable;
@@ -22,6 +23,8 @@ import service.MainService;
 import org.controlsfx.control.ListSelectionView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainController {
 
@@ -32,6 +35,10 @@ public class MainController {
     private Parent fxmlKeySelector;
     private KeySelectorController keySelectorController;
     private Stage keySelectorStage;
+    private ObservableList<TableDescription> selectedTableDescriptionObservableList;
+    private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
+
+    private ListSelectionView<String> view = new ListSelectionView<>();
 
     @FXML
     private TableView tableDBObjects;
@@ -57,7 +64,7 @@ public class MainController {
     private TableColumn<TableDescription, Integer> columnRecordCnt;
 
     @FXML
-    private Label lblChoosenTable;
+    private Label lblTest;
 
 
     @FXML
@@ -93,9 +100,30 @@ public class MainController {
             if (tableDBObjects.getSelectionModel().getSelectedItem() != null &&
                     tableDBObjects.getSelectionModel().getSelectedItem() instanceof DataBaseTable) {
 //                lblChoosenTable.setText(((DataBaseTable) newValue).getObjectKey());
-                tableTableDescription.setItems((ObservableList<TableDescription>) mainService.getHashMapOfTableDesc().get(((DataBaseTable) newValue).getObjectKey()));
+                selectedTableDescriptionObservableList = (ObservableList<TableDescription>) mainService.getHashMapOfTableDesc().get(((DataBaseTable) newValue).getObjectKey());
+                createListOfFields(selectedTableDescriptionObservableList);
+                tableTableDescription.setItems(selectedTableDescriptionObservableList);
             }
         });
+
+        view.getTargetItems().addListener(new ListChangeListener<String>() {
+            @Override
+            public void onChanged(Change<? extends String> c) {
+                lblTest.setText(generateKey(view.getTargetItems()));
+            }
+        });
+
+
+
+
+
+    }
+
+    private void createListOfFields(ObservableList<TableDescription> selectedTableDescriptionObservableList){
+        listOfSelectedFields.clear();
+        for (TableDescription tableDescription : selectedTableDescriptionObservableList) {
+            listOfSelectedFields.add(tableDescription.getFieldName());
+        }
     }
 
     private void initLoader() {
@@ -109,7 +137,6 @@ public class MainController {
     }
 
     public void actionButtonPressed(ActionEvent actionEvent) {
-
         Object source = actionEvent.getSource();
         // если нажата не кнопка - выходим из метода
         if (!(source instanceof Button)) {return;}
@@ -118,6 +145,7 @@ public class MainController {
 
         switch (clickedButton.getId()) {
             case "btnLoadKey":
+                view.getSourceItems().setAll(listOfSelectedFields);
                 showDialog();
                 break;
         }
@@ -133,14 +161,15 @@ public class MainController {
             keySelectorStage.setResizable(false);
             keySelectorStage.setScene(new Scene(fxmlKeySelector));
 
-            ListSelectionView<String> view = new ListSelectionView<>();
-            view.getSourceItems().addAll("Katja", "Dirk", "Philip", "Jule", "Armin");
+//            view.getSourceItems().addAll("Katja", "Dirk", "Philip", "Jule", "Armin");
 
-            ((GridPane)keySelectorStage.getScene().getRoot()).add(view, 0, 0);
-            ((GridPane)keySelectorStage.getScene().getRoot()).setAlignment(Pos.CENTER);
+//            ((GridPane)keySelectorStage.getScene().getRoot()).add(view, 0, 0);
+//            ((GridPane)keySelectorStage.getScene().getRoot()).setAlignment(Pos.CENTER);
 
-
-
+            ((Label)view.getSourceHeader()).setText("Available");
+            ((Label)view.getTargetHeader()).setText("Selected");
+            keySelectorController.getKeySelectorGridPane().add(view, 0, 0);
+            keySelectorController.getKeySelectorGridPane().setAlignment(Pos.CENTER);
 
 
             keySelectorStage.initModality(Modality.WINDOW_MODAL);
@@ -149,6 +178,21 @@ public class MainController {
 
         keySelectorStage.showAndWait(); // для ожидания закрытия окна
 
+    }
+
+    public String generateKey(ObservableList<String> listOfFields){
+
+        StringBuffer output = new StringBuffer(200);
+
+        if(listOfFields.size() >= 1){
+            output.append(listOfFields.get(0));
+            for(int i =1; i < listOfFields.size(); i++) {
+                output.append(",");
+                output.append(listOfFields.get(i));
+            }
+        }
+
+        return output.toString();
     }
 
 

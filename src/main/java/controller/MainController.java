@@ -1,6 +1,7 @@
 package controller;
 
 import exceptions.ConnectionRefusedException;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -18,13 +19,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.domain.DataBaseTable;
 import model.domain.TableDescription;
+import org.controlsfx.control.textfield.CustomTextField;
+import org.controlsfx.control.textfield.TextFields;
 import service.MainService;
 
 import org.controlsfx.control.ListSelectionView;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
 
 public class MainController {
 
@@ -36,9 +38,12 @@ public class MainController {
     private KeySelectorController keySelectorController;
     private Stage keySelectorStage;
     private ObservableList<TableDescription> selectedTableDescriptionObservableList;
-    private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
 
-    private ListSelectionView<String> view = new ListSelectionView<>();
+
+
+    private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
+    private ListSelectionView<String> selectionView = new ListSelectionView<>();
+
 
     @FXML
     private TableView tableDBObjects;
@@ -64,7 +69,25 @@ public class MainController {
     private TableColumn<TableDescription, Integer> columnRecordCnt;
 
     @FXML
-    private Label lblTest;
+    private Label lbl_Key;
+    @FXML
+    private Label lbl_RN_List;
+    @FXML
+    private Label lbl_RN_Sort;
+    @FXML
+    private Label lbl_Compare_Fields;
+    @FXML
+    private Label lbl_Initial_Fields;
+
+    @FXML
+    private CustomTextField txtHost;
+    @FXML
+    private CustomTextField txtPort;
+    @FXML
+    private CustomTextField txtSID;
+    @FXML
+    private CustomTextField txtUser;
+
 
 
     @FXML
@@ -83,7 +106,10 @@ public class MainController {
 
 //        tableTableDescription.setItems(mainService.getTableDescriptionForView());
 
-
+        setupClearButtonField(txtHost);
+        setupClearButtonField(txtPort);
+        setupClearButtonField(txtSID);
+        setupClearButtonField(txtUser);
         initListeners();
         initLoader();
     }
@@ -103,21 +129,41 @@ public class MainController {
                 selectedTableDescriptionObservableList = (ObservableList<TableDescription>) mainService.getHashMapOfTableDesc().get(((DataBaseTable) newValue).getObjectKey());
                 createListOfFields(selectedTableDescriptionObservableList);
                 tableTableDescription.setItems(selectedTableDescriptionObservableList);
+
+                setDefaultLabels();
             }
         });
 
-        view.getTargetItems().addListener(new ListChangeListener<String>() {
-            @Override
-            public void onChanged(Change<? extends String> c) {
-                lblTest.setText(generateKey(view.getTargetItems()));
-            }
-        });
-
-
-
+//        selectionView.getTargetItems().addListener(new ListChangeListener<String>() {
+//            @Override
+//            public void onChanged(Change<? extends String> c) {
+//                lbl_Key.setText(generateKey(selectionView.getTargetItems()));
+//            }
+//        });
 
 
     }
+
+    private void setDefaultLabels(){
+            lbl_Key.setText("...");
+            lbl_RN_List.setText("...");
+            lbl_RN_Sort.setText("...");
+            lbl_Compare_Fields.setText("All");
+            lbl_Initial_Fields.setText("...");
+    }
+
+
+    private void setupClearButtonField(CustomTextField customTextField) {
+        try {
+            Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
+            m.setAccessible(true);
+            m.invoke(null, customTextField, customTextField.rightProperty());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 
     private void createListOfFields(ObservableList<TableDescription> selectedTableDescriptionObservableList){
         listOfSelectedFields.clear();
@@ -128,7 +174,7 @@ public class MainController {
 
     private void initLoader() {
         try {
-            fxmlLoader.setLocation(getClass().getResource("../view/keyselector.fxml"));
+            fxmlLoader.setLocation(getClass().getResource("../view/selector_form.fxml"));
             fxmlKeySelector = fxmlLoader.load();
             keySelectorController = fxmlLoader.getController();
         } catch (IOException e) {
@@ -136,17 +182,42 @@ public class MainController {
         }
     }
 
+
     public void actionButtonPressed(ActionEvent actionEvent) {
         Object source = actionEvent.getSource();
         // если нажата не кнопка - выходим из метода
         if (!(source instanceof Button)) {return;}
-
         Button clickedButton = (Button) source;
-
         switch (clickedButton.getId()) {
-            case "btnLoadKey":
-                view.getSourceItems().setAll(listOfSelectedFields);
+            case "btn_Key":
+                selectionView.getSourceItems().setAll(listOfSelectedFields);
                 showDialog();
+                lbl_Key.setText(generateKey(selectionView.getTargetItems()));
+                selectionView.getTargetItems().clear();
+                break;
+            case "btn_RN_List":
+                selectionView.getSourceItems().setAll(listOfSelectedFields);
+                showDialog();
+                lbl_RN_List.setText(generateKey(selectionView.getTargetItems()));
+                selectionView.getTargetItems().clear();
+                break;
+            case "btn_RN_Sort":
+                selectionView.getSourceItems().setAll(listOfSelectedFields);
+                showDialog();
+                lbl_RN_Sort.setText(generateKey(selectionView.getTargetItems()));
+                selectionView.getTargetItems().clear();
+                break;
+            case "btn_Compare_Fields":
+                selectionView.getSourceItems().setAll(listOfSelectedFields);
+                showDialog();
+                lbl_Compare_Fields.setText(generateKey(selectionView.getTargetItems()));
+                selectionView.getTargetItems().clear();
+                break;
+            case "btn_Initial_Fields":
+                selectionView.getSourceItems().setAll(listOfSelectedFields);
+                showDialog();
+                lbl_Initial_Fields.setText(generateKey(selectionView.getTargetItems()));
+                selectionView.getTargetItems().clear();
                 break;
         }
     }
@@ -155,7 +226,7 @@ public class MainController {
 
         if (keySelectorStage == null) {
             keySelectorStage = new Stage();
-            keySelectorStage.setTitle("Choose Key");
+            keySelectorStage.setTitle("Select Fields");
             keySelectorStage.setMinHeight(275);
             keySelectorStage.setMinWidth(400);
             keySelectorStage.setResizable(false);
@@ -166,9 +237,9 @@ public class MainController {
 //            ((GridPane)keySelectorStage.getScene().getRoot()).add(view, 0, 0);
 //            ((GridPane)keySelectorStage.getScene().getRoot()).setAlignment(Pos.CENTER);
 
-            ((Label)view.getSourceHeader()).setText("Available");
-            ((Label)view.getTargetHeader()).setText("Selected");
-            keySelectorController.getKeySelectorGridPane().add(view, 0, 0);
+            ((Label) selectionView.getSourceHeader()).setText("Available");
+            ((Label) selectionView.getTargetHeader()).setText("Selected");
+            keySelectorController.getKeySelectorGridPane().add(selectionView, 0, 0);
             keySelectorController.getKeySelectorGridPane().setAlignment(Pos.CENTER);
 
 

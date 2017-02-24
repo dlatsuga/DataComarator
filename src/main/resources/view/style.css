@@ -1,0 +1,5 @@
+.subMenu {
+    -fx-border-style: dashed;
+    -fx-border-width: 0.5px;
+    -fx-border-color: cornflowerblue;
+}

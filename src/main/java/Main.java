@@ -1,26 +1,20 @@
 import controller.MainController;
 import exceptions.ConnectionRefusedException;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import model.domain.TableDescription;
-import service.MainService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        //Parent root = FXMLLoader.load(getClass().getResource("view/sample.fxml"));
+        //Parent root = FXMLLoader.load(getClass().getResource("view/main_form.fxml"));
 
         FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("view/sample.fxml"));
+        fxmlLoader.setLocation(getClass().getResource("view/main_form.fxml"));
         Parent fxmlMain = fxmlLoader.load();
 
         MainController mainController = fxmlLoader.getController();

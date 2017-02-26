@@ -21,7 +21,9 @@ public class Main extends Application {
         mainController.setMainStage(primaryStage);
 
         primaryStage.setTitle("V&T DataBase Comparator");
-        primaryStage.setScene(new Scene(fxmlMain, 1000, 700));
+        primaryStage.setScene(new Scene(fxmlMain, 900, 700));
+        primaryStage.setResizable(false);
+
 
             Image applicationMainIcon = new Image(getClass().getResourceAsStream("icon/Main.png"));
             primaryStage.getIcons().add(applicationMainIcon);

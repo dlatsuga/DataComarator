@@ -22,7 +22,11 @@ public class MainService {
     private DaoTableDescription daoTableDescription;
     private HashMap<String, ObservableList<TableDescription>> descriptionHashMap;
     private ObservableList<TableDescription> tableDescriptionList;
+    boolean isValidConnection = false;
 
+    public boolean isValidConnection() {
+        return isValidConnection;
+    }
 
     public ObservableList<DataBaseTable> getTableListForView() throws ConnectionRefusedException {
         List<DataBaseTable> listOfTables = getDaoDataBaseTable().findAllTablesOfVnT();
@@ -65,6 +69,14 @@ public class MainService {
         return daoTableDescription = daoFactory.getDaoTableDescription();
     }
 
-
-
+    public void testConnection(String host, String port, String sid, String user, String password)  {
+        DaoFactory.createUrl(host, port, sid);
+        DaoFactory.setUser(user);
+        DaoFactory.setPassword(password);
+        try {
+            isValidConnection = DaoFactory.testConnection();
+        } catch (ConnectionRefusedException e) {
+            isValidConnection = false;
+        }
+    }
 }

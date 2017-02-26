@@ -12,6 +12,33 @@ public class DaoFactory {
     private DaoDataBaseTable daoDataBaseTable;
     private DaoTableDescription daoTableDescription;
     private static DaoFactory instance;
+    private static String url = "jdbc:postgresql://localhost:5432/sqlexcomputers";
+    private static String user = "postgres";
+    private static String password = "Ldg131531";
+
+
+    public static String getUrl() {
+        return url;
+    }
+    public static void setUrl(String url) {
+        DaoFactory.url = url;
+    }
+    public static void createUrl(String host, String port, String sid) {
+        DaoFactory.url = "jdbc:postgresql://" + host + ":" + port + "/" + sid;
+    }
+    public static String getUser() {
+        return user;
+    }
+    public static void setUser(String user) {
+        DaoFactory.user = user;
+    }
+    public static String getPassword() {
+        return password;
+    }
+    public static void setPassword(String password) {
+        DaoFactory.password = password;
+    }
+
 
     public DaoDataBaseTable getDaoDataBaseTable() {
         if (daoDataBaseTable == null) {
@@ -33,10 +60,8 @@ public class DaoFactory {
 
     public static DaoFactory getInstance() throws ConnectionRefusedException {
         if (instance == null) {
-            String url = "jdbc:postgresql://localhost:5432/sqlexcomputers";
-
             try {
-                Connection conn = DriverManager.getConnection(url, "postgres", "Ldg131531");
+                Connection conn = DriverManager.getConnection(url, user, password);
                 instance = new DaoFactory(conn);
 
             } catch (SQLException e) {
@@ -44,5 +69,17 @@ public class DaoFactory {
             }
         }
         return instance;
+    }
+
+    public static boolean testConnection() throws ConnectionRefusedException {
+        boolean isValid = true;
+        try {
+            Connection conn = DriverManager.getConnection(url, user, password);
+            conn.close();
+        } catch (SQLException e) {
+            isValid = false;
+            throw new ConnectionRefusedException();
+        }
+        return isValid;
     }
 }

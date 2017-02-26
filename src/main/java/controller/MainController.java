@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.geometry.Pos;
 
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.domain.DataBaseTable;
@@ -38,8 +39,6 @@ public class MainController {
     private KeySelectorController keySelectorController;
     private Stage keySelectorStage;
     private ObservableList<TableDescription> selectedTableDescriptionObservableList;
-
-
 
     private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
     private ListSelectionView<String> selectionView = new ListSelectionView<>();
@@ -78,17 +77,48 @@ public class MainController {
     private Label lbl_Compare_Fields;
     @FXML
     private Label lbl_Initial_Fields;
+    @FXML
+    private Label lbl_Split_Key;
 
     @FXML
-    private CustomTextField txtHost;
+    private CustomTextField txt_Host;
     @FXML
-    private CustomTextField txtPort;
+    private CustomTextField txt_Port;
     @FXML
-    private CustomTextField txtSID;
+    private CustomTextField txt_Sid;
     @FXML
-    private CustomTextField txtUser;
+    private CustomTextField txt_User;
+    @FXML
+    private CustomTextField txt_DB_Link;
+    @FXML
+    private CustomTextField txt_Pattern_Name;
 
+    @FXML
+    private PasswordField txt_Pwd;
 
+    @FXML
+    private Button btn_Test_Conn;
+    @FXML
+    private Button btn_Load_Data;
+    @FXML
+    private Button btn_Save_Pattern;
+    @FXML
+    private Button btn_Execute;
+    @FXML
+    private Button btn_Key;
+    @FXML
+    private Button btn_RN_List;
+    @FXML
+    private Button btn_RN_Sort;
+    @FXML
+    private Button btn_Compare_Fields;
+    @FXML
+    private Button btn_Initial_Fields;
+    @FXML
+    private Button btn_Split_Key;
+
+    @FXML
+    private Pane pane_connection;
 
     @FXML
     public void initialize() throws ConnectionRefusedException {
@@ -98,7 +128,7 @@ public class MainController {
         columnFieldsCnt.setCellValueFactory(new PropertyValueFactory<DataBaseTable, Integer>("fieldsCount"));
         columnRowsCnt.setCellValueFactory(new PropertyValueFactory<DataBaseTable, Integer>("rowsCount"));
 
-        tableDBObjects.setItems(mainService.getTableListForView());
+//        tableDBObjects.setItems(mainService.getTableListForView());
 
         columnFieldName.setCellValueFactory(new PropertyValueFactory<TableDescription, String>("fieldName"));
         columnFieldType.setCellValueFactory(new PropertyValueFactory<TableDescription, String>("fieldType"));
@@ -106,12 +136,15 @@ public class MainController {
 
 //        tableTableDescription.setItems(mainService.getTableDescriptionForView());
 
-        setupClearButtonField(txtHost);
-        setupClearButtonField(txtPort);
-        setupClearButtonField(txtSID);
-        setupClearButtonField(txtUser);
+        setupClearButtonField(txt_Host);
+        setupClearButtonField(txt_Port);
+        setupClearButtonField(txt_Sid);
+        setupClearButtonField(txt_User);
+        setupClearButtonField(txt_DB_Link);
+        setupClearButtonField(txt_Pattern_Name);
+
         initListeners();
-        initLoader();
+//        initLoader();
     }
 
     public void setMainStage(Stage mainStage) {
@@ -150,6 +183,7 @@ public class MainController {
             lbl_RN_Sort.setText("...");
             lbl_Compare_Fields.setText("All");
             lbl_Initial_Fields.setText("...");
+            lbl_Split_Key.setText("...");
     }
 
 
@@ -162,8 +196,6 @@ public class MainController {
             e.printStackTrace();
         }
     }
-
-
 
     private void createListOfFields(ObservableList<TableDescription> selectedTableDescriptionObservableList){
         listOfSelectedFields.clear();
@@ -182,13 +214,34 @@ public class MainController {
         }
     }
 
-
     public void actionButtonPressed(ActionEvent actionEvent) {
         Object source = actionEvent.getSource();
         // если нажата не кнопка - выходим из метода
         if (!(source instanceof Button)) {return;}
         Button clickedButton = (Button) source;
         switch (clickedButton.getId()) {
+            case "btn_Test_Conn":
+//                   mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+//                   boolean isValidConnection =  mainService.isValidConnection();
+                   boolean isValidConnection =  true;
+                   if (isValidConnection){
+                       btn_Load_Data.setDisable(false);
+                       pane_connection.getStyleClass().removeAll();
+                       pane_connection.getStyleClass().add("subMenu");
+                   }
+                   else {
+                       pane_connection.getStyleClass().removeAll();
+                       pane_connection.getStyleClass().add("rejected");
+                   }
+                break;
+            case "btn_Load_Data":
+                try {
+                    tableDBObjects.setItems(mainService.getTableListForView());
+                    initLoader();
+                } catch (ConnectionRefusedException e) {
+                    e.printStackTrace();
+                }
+                break;
             case "btn_Key":
                 selectionView.getSourceItems().setAll(listOfSelectedFields);
                 showDialog();

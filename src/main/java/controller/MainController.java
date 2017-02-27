@@ -25,6 +25,7 @@ import org.controlsfx.control.textfield.TextFields;
 import service.MainService;
 
 import org.controlsfx.control.ListSelectionView;
+import sun.applet.Main;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -145,6 +146,7 @@ public class MainController {
 
         initListeners();
 //        initLoader();
+        loadKeyPattern();
     }
 
     public void setMainStage(Stage mainStage) {
@@ -174,6 +176,10 @@ public class MainController {
 //            }
 //        });
 
+
+    }
+
+    private void loadKeyPattern(){
 
     }
 
@@ -226,11 +232,11 @@ public class MainController {
                    boolean isValidConnection =  true;
                    if (isValidConnection){
                        btn_Load_Data.setDisable(false);
-                       pane_connection.getStyleClass().removeAll();
+                       pane_connection.getStyleClass().clear();
                        pane_connection.getStyleClass().add("subMenu");
                    }
                    else {
-                       pane_connection.getStyleClass().removeAll();
+                       pane_connection.getStyleClass().clear();
                        pane_connection.getStyleClass().add("rejected");
                    }
                 break;

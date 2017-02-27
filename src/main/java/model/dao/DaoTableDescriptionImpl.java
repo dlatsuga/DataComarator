@@ -45,13 +45,17 @@ public class DaoTableDescriptionImpl implements DaoTableDescription {
 
     public List<TableDescription> findAllTablesDescription() {
         String sql =
-                "Select \n" +
-                "\t tt.table_schema || '_' || tt.table_name as table_key\n" +
-                "    ,tt.column_name\n" +
-                "    ,tt.udt_name\n" +
-                "    ,public.REC_COUNT(tt.column_name,tt.table_name,tt.table_schema) as REC_COUNT\n" +
-                "from information_schema.columns tt\n" +
-                "where tt.table_schema in ('public','test')";
+                "  Select \n" +
+                        "    cc.owner || cc.table_name as table_key\n" +
+                        "    ,cc.column_name\n" +
+                        "    ,cc.data_type\n" +
+//                "    ,case \n" +
+//                "      when cc.data_type = 'VARCHAR2' then\n" +
+//                "      TESTIMMD.REC_COUNT(cc.column_name,cc.table_name,cc.owner)\n" +
+//                "      else 0\n" +
+//                "    end as cnt\n" +
+                        "   ,777 as cnt\n" +
+                        "  from all_tab_columns cc where cc.owner in ('TESTIMMD','VT_TRN') and cc.table_name like 'VT_%'";
         try {
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);

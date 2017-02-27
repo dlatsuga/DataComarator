@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="controlsfx-8.40.12">
+  <library name="ojdbc8">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../other/controlsfx-8.40.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../jdbc/lib/ojdbc8.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

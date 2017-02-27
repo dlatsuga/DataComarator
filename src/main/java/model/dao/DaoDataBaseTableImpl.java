@@ -17,16 +17,18 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
     public DataBaseTable findTableByName(String schema, String tableName) {
         /*String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? and table_name = ?";*/
         String sql =
-                        "Select\n" +
-                        "        tt.table_schema || '_' || tt.table_name as table_key\n" +
-                        "        tt.table_schema\n" +
-                        "        ,tt.table_name\n" +
-                        "        ,count(cc.column_name) fields_cnt\n" +
-                        "from information_schema.tables tt\n" +
-                        "left join information_schema.columns cc on tt.table_schema = cc.table_schema\n" +
-                        "     and tt.table_name = cc.table_name\n" +
-                        "where tt.table_schema = ? and tt.table_name = ?\n" +
-                        "group by tt.table_schema, tt.table_name";
+                        "Select \n" +
+                        "  tt.owner || tt.object_name  as table_key\n" +
+                        "  ,tt.owner\n" +
+                        "  ,tt.object_name \n" +
+                        "  ,count(cc.column_name) cnt_\n" +
+                        "From all_objects tt\n" +
+                        "     left join all_tab_columns cc on cc.owner = tt.owner and tt.object_name = cc.table_name\n" +
+                        "Where tt.object_type = 'TABLE' And tt.owner = ? And tt.object_name = ? \n" +
+                        "group by \n" +
+                        "  tt.owner || tt.object_name\n" +
+                        "  ,tt.owner\n" +
+                        "  ,tt.object_name";
         try {
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1,schema);
@@ -43,16 +45,19 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
     public List<DataBaseTable> findAllTablesOfVnT() {
         List<DataBaseTable> listOfTables = new ArrayList<DataBaseTable>();
         String sql =
-                "Select\n" +
-                "        tt.table_schema || '_' || tt.table_name as table_key\n" +
-                "        ,tt.table_schema\n" +
-                "        ,tt.table_name\n" +
-                "        ,count(cc.column_name) fields_cnt\n" +
-                "from information_schema.tables tt\n" +
-                "left join information_schema.columns cc on tt.table_schema = cc.table_schema\n" +
-                "     and tt.table_name = cc.table_name\n" +
-                "Where tt.table_schema in ('public', 'test')\n" +
-                "group by tt.table_schema, tt.table_name";
+                "Select \n" +
+                        "  tt.owner || tt.object_name  as table_key\n" +
+                        "  ,tt.owner\n" +
+                        "  ,tt.object_name \n" +
+                        "  ,count(cc.column_name) cnt_\n" +
+                        "From all_objects tt\n" +
+                        "     left join all_tab_columns cc on cc.owner = tt.owner and tt.object_name = cc.table_name\n" +
+//                "Where tt.object_type = 'TABLE' And tt.owner = 'TESTIMMD' And tt.object_name = 'VT_DTLS_TEST'\n" +
+                        "Where tt.object_type = 'TABLE' And tt.owner in ('TESTIMMD','VT_TRN') And tt.object_name like 'VT_%'\n" +
+                        "group by \n" +
+                        "  tt.owner || tt.object_name\n" +
+                        "  ,tt.owner\n" +
+                        "  ,tt.object_name";
         try {
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);

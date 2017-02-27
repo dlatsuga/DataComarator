@@ -2,8 +2,9 @@ package controller;
 
 import exceptions.ConnectionRefusedException;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,13 +20,14 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.domain.DataBaseTable;
+import model.domain.KeyPattern;
 import model.domain.TableDescription;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import service.MainService;
 
 import org.controlsfx.control.ListSelectionView;
-import sun.applet.Main;
+import service.PatternService;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -34,6 +36,7 @@ public class MainController {
 
     private MainService mainService = new MainService();
     private Stage mainStage;
+    private PatternService patternService = new PatternService();
 
     private FXMLLoader fxmlLoader = new FXMLLoader();
     private Parent fxmlKeySelector;
@@ -43,6 +46,7 @@ public class MainController {
 
     private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
     private ListSelectionView<String> selectionView = new ListSelectionView<>();
+
 
 
     @FXML
@@ -119,6 +123,9 @@ public class MainController {
     private Button btn_Split_Key;
 
     @FXML
+    private ChoiceBox<String> chb_Patterns_List;
+
+    @FXML
     private Pane pane_connection;
 
     @FXML
@@ -175,12 +182,27 @@ public class MainController {
 //                lbl_Key.setText(generateKey(selectionView.getTargetItems()));
 //            }
 //        });
-
+        chb_Patterns_List.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        KeyPattern selectedkeyPattern =  patternService.getPatternInstanceByName(newValue);
+                        lbl_Key.setText(selectedkeyPattern.getKey_for_join());
+                        lbl_RN_List.setText(selectedkeyPattern.getRow_number_list());
+                        lbl_RN_Sort.setText(selectedkeyPattern.getRow_number_sort());
+                        lbl_Compare_Fields.setText(selectedkeyPattern.getCompare_fields());
+                        lbl_Initial_Fields.setText(selectedkeyPattern.getInitial_fields());
+                        lbl_Split_Key.setText(selectedkeyPattern.getExport_split_key());
+                    }
+                }
+        );
 
     }
 
     private void loadKeyPattern(){
-
+        patternService.loadKeyPatterns();
+//        chb_Patterns_List.setItems(FXCollections.observableArrayList("First", "Second", "Third"));
+        chb_Patterns_List.setItems(FXCollections.observableArrayList(patternService.getPatternsName()));
     }
 
     private void setDefaultLabels(){
@@ -227,9 +249,9 @@ public class MainController {
         Button clickedButton = (Button) source;
         switch (clickedButton.getId()) {
             case "btn_Test_Conn":
-//                   mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
-//                   boolean isValidConnection =  mainService.isValidConnection();
-                   boolean isValidConnection =  true;
+                   mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+                   boolean isValidConnection =  mainService.isValidConnection();
+//                   boolean isValidConnection =  true;
                    if (isValidConnection){
                        btn_Load_Data.setDisable(false);
                        pane_connection.getStyleClass().clear();

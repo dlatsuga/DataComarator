@@ -1,11 +1,10 @@
 package service;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.domain.KeyPattern;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 
 /*TODO*/
@@ -29,7 +28,7 @@ public class PatternService {
 
     ClassLoader classLoader = PatternService.class.getClassLoader();
 //    File file = new File(classLoader.getResource("patterns/patterns.json").getFile().toString());
-    File file = new File("U:\\IDEA_Projects\\DataComparator\\src\\main\\resources\\patterns\\patterns.json");
+    File file = new File("C:\\IDEA_Projects\\DataComparator\\src\\main\\resources\\patterns\\patterns.json");
 
     Gson gson = new Gson();
 
@@ -79,11 +78,22 @@ public class PatternService {
         }
         else{
             keyPattern = new KeyPattern(name, key_for_join, row_number_list, row_number_sort, compare_fields, initial_fields, export_split_key);
-            patternsName.add(name);
             keyPatterns.add(keyPattern);
+            patternsName.add(name);
         }
     }
 
+    public void saveKeyPatternList(){
+        try (Writer writer = new FileWriter("C:\\IDEA_Projects\\DataComparator\\src\\main\\resources\\patterns\\patterns.json")) {
+                gson = new GsonBuilder()
+                        .setPrettyPrinting()
+                        .create();
+                gson.toJson(keyPatterns, writer);
+                System.out.println("Save Done");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+    }
 
 
 

@@ -66,12 +66,12 @@
          <children>
             <Pane layoutX="15.0" layoutY="1.0" prefHeight="214.0" prefWidth="174.0" styleClass="subMenu">
                <children>
-                  <Button fx:id="btn_Key" layoutX="20.0" layoutY="7.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Key for Join" />
-                  <Button fx:id="btn_RN_List" layoutX="20.0" layoutY="42.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Row Number List" />
-                  <Button fx:id="btn_RN_Sort" layoutX="20.0" layoutY="77.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Row Number Sort" />
-                  <Button fx:id="btn_Compare_Fields" layoutX="20.0" layoutY="112.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Compare Fields" />
-                  <Button fx:id="btn_Initial_Fields" layoutX="20.0" layoutY="147.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Initial Fields" />
-                  <Button fx:id="btn_Split_Key" layoutX="20.0" layoutY="182.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Export Split Key" />
+                  <Button fx:id="btn_Key" disable="true" layoutX="20.0" layoutY="7.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Key for Join" />
+                  <Button fx:id="btn_RN_List" disable="true" layoutX="20.0" layoutY="42.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Row Number List" />
+                  <Button fx:id="btn_RN_Sort" disable="true" layoutX="20.0" layoutY="77.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Row Number Sort" />
+                  <Button fx:id="btn_Compare_Fields" disable="true" layoutX="20.0" layoutY="112.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Compare Fields" />
+                  <Button fx:id="btn_Initial_Fields" disable="true" layoutX="20.0" layoutY="147.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Initial Fields" />
+                  <Button fx:id="btn_Split_Key" disable="true" layoutX="20.0" layoutY="182.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Export Split Key" />
                </children>
             </Pane>
             <Label fx:id="lbl_Key" layoutX="201.0" layoutY="10.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="201.0" AnchorPane.rightAnchor="16.0" />
@@ -105,14 +105,14 @@
             <Button fx:id="btn_Test_Conn" onAction="#actionButtonPressed" layoutX="270.0" layoutY="20.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Test Connection" />
             <Button fx:id="btn_Load_Data" onAction="#actionButtonPressed" disable="true" layoutX="270.0" layoutY="100.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Load Data" />
             <ChoiceBox fx:id="chb_Patterns_List" layoutX="490.0" layoutY="20.0" prefHeight="25.0" prefWidth="150.0" />
-            <Button fx:id="btn_Save_Pattern" layoutX="490.0" layoutY="100.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Save Pattern" />
+            <Button fx:id="btn_Save_Pattern" onAction="#actionButtonPressed" layoutX="490.0" layoutY="100.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Save Pattern" />
             <Pane layoutX="705.0" layoutY="10.0" prefHeight="200.0" prefWidth="177.0" styleClass="subMenu" AnchorPane.rightAnchor="15.0">
                <children>
                   <CheckBox fx:id="cb_Create_Base_Tables" layoutX="15.0" layoutY="10.0" mnemonicParsing="false" text="Create Base Tables" />
                   <CheckBox fx:id="cb_Update_RN" layoutX="15.0" layoutY="50.0" mnemonicParsing="false" text="Update Row Number" />
                   <CheckBox fx:id="cb_Create_Res_Tables" layoutX="15.0" layoutY="90.0" mnemonicParsing="false" text="Create Result Tables" />
                   <CheckBox fx:id="cb_Extract_Data" layoutX="15.0" layoutY="130.0" mnemonicParsing="false" text="Extract Data" />
-                         <Button fx:id="btn_Execute" layoutX="20.0" layoutY="165.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="135.0" text="Execute" />
+                  <Button fx:id="btn_Execute" disable="true" layoutX="20.0" layoutY="165.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="135.0" text="Execute" />
                </children>
             </Pane>
             <CustomTextField fx:id="txt_Pattern_Name" layoutX="490.0" layoutY="61.0" prefHeight="25.0" prefWidth="150.0" />

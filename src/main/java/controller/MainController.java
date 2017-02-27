@@ -186,13 +186,18 @@ public class MainController {
                 new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        KeyPattern selectedkeyPattern =  patternService.getPatternInstanceByName(newValue);
-                        lbl_Key.setText(selectedkeyPattern.getKey_for_join());
-                        lbl_RN_List.setText(selectedkeyPattern.getRow_number_list());
-                        lbl_RN_Sort.setText(selectedkeyPattern.getRow_number_sort());
-                        lbl_Compare_Fields.setText(selectedkeyPattern.getCompare_fields());
-                        lbl_Initial_Fields.setText(selectedkeyPattern.getInitial_fields());
-                        lbl_Split_Key.setText(selectedkeyPattern.getExport_split_key());
+                        if(newValue == null){
+                            newValue = oldValue;
+                            chb_Patterns_List.setValue(oldValue);
+                            txt_Pattern_Name.clear();
+                        }
+                        KeyPattern selectedKeyPattern =  patternService.getPatternInstanceByName(newValue);
+                        lbl_Key.setText(selectedKeyPattern.getKey_for_join());
+                        lbl_RN_List.setText(selectedKeyPattern.getRow_number_list());
+                        lbl_RN_Sort.setText(selectedKeyPattern.getRow_number_sort());
+                        lbl_Compare_Fields.setText(selectedKeyPattern.getCompare_fields());
+                        lbl_Initial_Fields.setText(selectedKeyPattern.getInitial_fields());
+                        lbl_Split_Key.setText(selectedKeyPattern.getExport_split_key());
                     }
                 }
         );
@@ -269,6 +274,26 @@ public class MainController {
                 } catch (ConnectionRefusedException e) {
                     e.printStackTrace();
                 }
+                        btn_Key.setDisable(false);
+                        btn_RN_List.setDisable(false);
+                        btn_RN_Sort.setDisable(false);
+                        btn_Compare_Fields.setDisable(false);
+                        btn_Initial_Fields.setDisable(false);
+                        btn_Split_Key.setDisable(false);
+                break;
+            case "btn_Save_Pattern":
+                patternService.updateKeyPatternList(txt_Pattern_Name.getText()
+                        ,lbl_Key.getText()
+                        ,lbl_RN_List.getText()
+                        ,lbl_RN_Sort.getText()
+                        ,lbl_Compare_Fields.getText()
+                        ,lbl_Initial_Fields.getText()
+                        ,lbl_Split_Key.getText());
+                patternService.saveKeyPatternList();
+//                patternService.loadKeyPatterns();
+//                chb_Patterns_List.setValue(txt_Pattern_Name.getText());
+                chb_Patterns_List.setItems(FXCollections.observableArrayList(patternService.getPatternsName()));
+
                 break;
             case "btn_Key":
                 selectionView.getSourceItems().setAll(listOfSelectedFields);

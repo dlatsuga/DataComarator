@@ -17,9 +17,7 @@ public class DaoFactory {
 //    private static String user = "postgres";
 //    private static String password = "Ldg131531";
 
-    private static String url = "jdbc:oracle:thin:@DK01SN7007:1521:T7007204";
-    private static String user = "TESTIMMD";
-    private static String password = "TESTIMMD";
+
 
     public static String getUrl() {
         return url;
@@ -29,7 +27,7 @@ public class DaoFactory {
     }
     public static void createUrl(String host, String port, String sid) {
 //        DaoFactory.url = "jdbc:postgresql://" + host + ":" + port + "/" + sid;
-        DaoFactory.url = "jdbc:oracle:thin:@" + host + ":" + port + ":" + sid;
+        DaoFactory.url = "jdbc:oracle:thin:@" + host + ":" + port + "" + sid;
     }
     public static String getUser() {
         return user;

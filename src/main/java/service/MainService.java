@@ -69,14 +69,12 @@ public class MainService {
         return daoTableDescription = daoFactory.getDaoTableDescription();
     }
 
-    public void testConnection(String host, String port, String sid, String user, String password)  {
+    public void testConnection(String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
+        isValidConnection = false;
         DaoFactory.createUrl(host, port, sid);
         DaoFactory.setUser(user);
         DaoFactory.setPassword(password);
-        try {
-            isValidConnection = DaoFactory.testConnection();
-        } catch (ConnectionRefusedException e) {
-            isValidConnection = false;
-        }
+
+        isValidConnection = DaoFactory.testConnection();
     }
 }

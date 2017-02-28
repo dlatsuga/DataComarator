@@ -79,13 +79,13 @@ public class DaoFactory {
     }
 
     public static boolean testConnection() throws ConnectionRefusedException {
-        boolean isValid = true;
+        boolean isValid = false;
         try {
             Connection conn = DriverManager.getConnection(url, user, password);
             conn.close();
+            isValid = true;
         } catch (SQLException e) {
-            isValid = false;
-            throw new ConnectionRefusedException();
+            throw new ConnectionRefusedException(e.getMessage(), e);
         }
         return isValid;
     }

@@ -46,7 +46,7 @@ public class DaoTableDescriptionImpl implements DaoTableDescription {
     public List<TableDescription> findAllTablesDescription() {
         String sql =
                 "  Select \n" +
-                        "    cc.owner || cc.table_name as table_key\n" +
+                        "    cc.owner || '.' || cc.table_name as table_key\n" +
                         "    ,cc.column_name\n" +
                         "    ,cc.data_type\n" +
 //                "    ,case \n" +

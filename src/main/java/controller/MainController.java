@@ -28,15 +28,18 @@ import service.MainService;
 
 import org.controlsfx.control.ListSelectionView;
 import service.PatternService;
+import service.ProcedureService;
+import utils.DialogManager;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 
 public class MainController {
 
-    private MainService mainService = new MainService();
     private Stage mainStage;
+    private MainService mainService = new MainService();
     private PatternService patternService = new PatternService();
+    private ProcedureService procedureService = new ProcedureService();
 
     private FXMLLoader fxmlLoader = new FXMLLoader();
     private Parent fxmlKeySelector;
@@ -126,6 +129,15 @@ public class MainController {
     private ChoiceBox<String> chb_Patterns_List;
 
     @FXML
+    private CheckBox cb_Create_Base_Tables;
+    @FXML
+    private CheckBox cb_Update_RN;
+    @FXML
+    private CheckBox cb_Create_Res_Tables;
+    @FXML
+    private CheckBox cb_Extract_Data;
+
+    @FXML
     private Pane pane_connection;
 
     @FXML
@@ -173,15 +185,12 @@ public class MainController {
                 tableTableDescription.setItems(selectedTableDescriptionObservableList);
 
                 setDefaultLabels();
+                enableCheckBox();
+                btn_Execute.setDisable(false);
+
             }
         });
 
-//        selectionView.getTargetItems().addListener(new ListChangeListener<String>() {
-//            @Override
-//            public void onChanged(Change<? extends String> c) {
-//                lbl_Key.setText(generateKey(selectionView.getTargetItems()));
-//            }
-//        });
         chb_Patterns_List.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() {
                     @Override
@@ -191,6 +200,7 @@ public class MainController {
                             chb_Patterns_List.setValue(oldValue);
                             txt_Pattern_Name.clear();
                         }
+
                         KeyPattern selectedKeyPattern =  patternService.getPatternInstanceByName(newValue);
                         lbl_Key.setText(selectedKeyPattern.getKey_for_join());
                         lbl_RN_List.setText(selectedKeyPattern.getRow_number_list());
@@ -201,7 +211,6 @@ public class MainController {
                     }
                 }
         );
-
     }
 
     private void loadKeyPattern(){
@@ -217,6 +226,23 @@ public class MainController {
             lbl_Compare_Fields.setText("All");
             lbl_Initial_Fields.setText("...");
             lbl_Split_Key.setText("...");
+    }
+
+    private void enableCheckBox(){
+
+        cb_Create_Base_Tables.setDisable(false);
+        cb_Update_RN.setDisable(false);
+        cb_Create_Res_Tables.setDisable(false);
+        cb_Extract_Data.setDisable(false);
+    }
+
+    private void enableButtons(){
+        btn_Key.setDisable(false);
+        btn_RN_List.setDisable(false);
+        btn_RN_Sort.setDisable(false);
+        btn_Compare_Fields.setDisable(false);
+        btn_Initial_Fields.setDisable(false);
+        btn_Split_Key.setDisable(false);
     }
 
 
@@ -254,32 +280,29 @@ public class MainController {
         Button clickedButton = (Button) source;
         switch (clickedButton.getId()) {
             case "btn_Test_Conn":
-                   mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
-                   boolean isValidConnection =  mainService.isValidConnection();
-//                   boolean isValidConnection =  true;
-                   if (isValidConnection){
-                       btn_Load_Data.setDisable(false);
-                       pane_connection.getStyleClass().clear();
-                       pane_connection.getStyleClass().add("subMenu");
-                   }
-                   else {
-                       pane_connection.getStyleClass().clear();
-                       pane_connection.getStyleClass().add("rejected");
-                   }
+                try {
+                    mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+                    boolean isValidConnection =  mainService.isValidConnection();
+                    if (isValidConnection){
+                        btn_Load_Data.setDisable(false);
+                        pane_connection.getStyleClass().clear();
+                        pane_connection.getStyleClass().add("subMenu");
+                    }
+                } catch (ConnectionRefusedException e) {
+                    pane_connection.getStyleClass().clear();
+                    pane_connection.getStyleClass().add("rejected");
+                    DialogManager.showErrorDialog(e);
+                }
                 break;
             case "btn_Load_Data":
                 try {
                     tableDBObjects.setItems(mainService.getTableListForView());
                     initLoader();
+                    enableButtons();
                 } catch (ConnectionRefusedException e) {
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getCause().getClass().getSimpleName());
                 }
-                        btn_Key.setDisable(false);
-                        btn_RN_List.setDisable(false);
-                        btn_RN_Sort.setDisable(false);
-                        btn_Compare_Fields.setDisable(false);
-                        btn_Initial_Fields.setDisable(false);
-                        btn_Split_Key.setDisable(false);
                 break;
             case "btn_Save_Pattern":
                 patternService.updateKeyPatternList(txt_Pattern_Name.getText()
@@ -293,6 +316,12 @@ public class MainController {
 //                patternService.loadKeyPatterns();
 //                chb_Patterns_List.setValue(txt_Pattern_Name.getText());
                 chb_Patterns_List.setItems(FXCollections.observableArrayList(patternService.getPatternsName()));
+                txt_Pattern_Name.clear();
+                break;
+
+            case "btn_Execute":
+
+                System.out.println("Call Procedure");
 
                 break;
             case "btn_Key":

@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import model.domain.KeyPattern;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 
 /*TODO*/
@@ -12,6 +13,8 @@ public class PatternService {
 
     private List<KeyPattern> keyPatterns;
     private Set<String> patternsName;
+    private File file;
+    private Gson gson;
 
     public List<KeyPattern> getKeyPatterns() {
         return keyPatterns;
@@ -26,15 +29,18 @@ public class PatternService {
         this.patternsName = patternsName;
     }
 
-    ClassLoader classLoader = PatternService.class.getClassLoader();
-//    File file = new File(classLoader.getResource("patterns/patterns.json").getFile().toString());
-    File file = new File("C:\\IDEA_Projects\\DataComparator\\src\\main\\resources\\patterns\\patterns.json");
 
-    Gson gson = new Gson();
+    public void loadKeyPatterns() {
 
-
-    public void loadKeyPatterns(){
+        gson = new Gson();
         patternsName = new HashSet<>();
+        try {
+            file = new File(Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("patterns/patterns.json").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         try {
             keyPatterns = new ArrayList<KeyPattern>(Arrays.asList(gson.fromJson(new FileReader(file), KeyPattern[].class)));
             for (KeyPattern keyPattern : keyPatterns) {
@@ -45,28 +51,19 @@ public class PatternService {
         }
     }
 
-    public KeyPattern getPatternInstanceByName(String patternName){
+    public KeyPattern getPatternInstanceByName(String patternName) {
 
         for (KeyPattern keyPattern : keyPatterns) {
-            if(keyPattern.getName().equals(patternName)){
+            if (keyPattern.getName().equals(patternName)) {
                 return keyPattern;
             }
         }
         return null;
     }
 
-    private String name;
-    private String key_for_join;
-    private String row_number_list;
-    private String row_number_sort;
-    private String compare_fields;
-    private String initial_fields;
-    private String export_split_key;
-
-
-    public void updateKeyPatternList(String name, String key_for_join, String row_number_list, String row_number_sort, String compare_fields, String initial_fields, String export_split_key){
+    public void updateKeyPatternList(String name, String key_for_join, String row_number_list, String row_number_sort, String compare_fields, String initial_fields, String export_split_key) {
         KeyPattern keyPattern = getPatternInstanceByName(name);
-        if(keyPattern != null){
+        if (keyPattern != null) {
             keyPatterns.remove(keyPattern);
             keyPattern.setKey_for_join(key_for_join);
             keyPattern.setRow_number_list(row_number_list);
@@ -75,26 +72,33 @@ public class PatternService {
             keyPattern.setInitial_fields(initial_fields);
             keyPattern.setExport_split_key(export_split_key);
             keyPatterns.add(keyPattern);
-        }
-        else{
+        } else {
             keyPattern = new KeyPattern(name, key_for_join, row_number_list, row_number_sort, compare_fields, initial_fields, export_split_key);
             keyPatterns.add(keyPattern);
             patternsName.add(name);
         }
     }
 
-    public void saveKeyPatternList(){
-        try (Writer writer = new FileWriter("C:\\IDEA_Projects\\DataComparator\\src\\main\\resources\\patterns\\patterns.json")) {
-                gson = new GsonBuilder()
-                        .setPrettyPrinting()
-                        .create();
-                gson.toJson(keyPatterns, writer);
-                System.out.println("Save Done");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-    }
+    public void saveKeyPatternList() {
 
+        try {
+            file = new File(Thread.currentThread()
+                    .getContextClassLoader()
+                    .getResource("patterns/patterns.json").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        try (Writer writer = new FileWriter(file)) {
+            gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+            gson.toJson(keyPatterns, writer);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

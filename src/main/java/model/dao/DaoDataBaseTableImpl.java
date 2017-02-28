@@ -18,7 +18,7 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
         /*String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? and table_name = ?";*/
         String sql =
                         "Select \n" +
-                        "  tt.owner || tt.object_name  as table_key\n" +
+                        "  tt.owner || '.' || tt.object_name  as table_key\n" +
                         "  ,tt.owner\n" +
                         "  ,tt.object_name \n" +
                         "  ,count(cc.column_name) cnt_\n" +
@@ -46,7 +46,7 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
         List<DataBaseTable> listOfTables = new ArrayList<DataBaseTable>();
         String sql =
                 "Select \n" +
-                        "  tt.owner || tt.object_name  as table_key\n" +
+                        "  tt.owner || '.' || tt.object_name  as table_key\n" +
                         "  ,tt.owner\n" +
                         "  ,tt.object_name \n" +
                         "  ,count(cc.column_name) cnt_\n" +

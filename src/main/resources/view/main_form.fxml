@@ -18,17 +18,17 @@
     <center>
         <AnchorPane prefHeight="242.0" prefWidth="744.0" BorderPane.alignment="CENTER">
             <children>
-                <SplitPane dividerPositions="0.5078534031413613" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane dividerPositions="0.46774193548387094" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <items>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="240.0" prefWidth="465.0">
                             <children>
                                 <TableView fx:id="tableDBObjects" layoutX="-17.0" layoutY="7.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <columns>
-                                        <TableColumn fx:id="columnSchema" prefWidth="75.0" text="Schema" />
-                                        <TableColumn fx:id="columnObjectName" prefWidth="97.0" text="Table" />
-                                        <TableColumn fx:id="columnObjectSize" prefWidth="116.0" text="Size Mb" />
-                                        <TableColumn fx:id="columnFieldsCnt" prefWidth="30.0" text="Fileds #" />
-                                        <TableColumn fx:id="columnRowsCnt" prefWidth="30.0" text="Rows #" />
+                                        <TableColumn fx:id="columnSchema" prefWidth="75.0" styleClass="tableColumn" text="Schema" />
+                                        <TableColumn fx:id="columnObjectName" prefWidth="97.0" styleClass="tableColumn" text="Table" />
+                                        <TableColumn fx:id="columnObjectSize" maxWidth="2500.0" prefWidth="-1.0" styleClass="tableColumn" text="Size Mb" />
+                                        <TableColumn fx:id="columnFieldsCnt" maxWidth="2500.0" prefWidth="-1.0" styleClass="tableColumn" text="Fileds #" />
+                                        <TableColumn fx:id="columnRowsCnt" maxWidth="2500.0" prefWidth="-1.0" styleClass="tableColumn" text="Rows #" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -40,9 +40,9 @@
                             <children>
                                 <TableView fx:id="tableTableDescription" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <columns>
-                                        <TableColumn fx:id="columnFieldName" prefWidth="-1.0" text="Field" />
-                                        <TableColumn fx:id="columnFieldType" prefWidth="-1.0" text="Type" />
-                                        <TableColumn fx:id="columnRecordCnt" prefWidth="-1.0" text="Unique data #" />
+                                        <TableColumn fx:id="columnFieldName" prefWidth="-1.0" styleClass="tableColumn" text="Field" />
+                                        <TableColumn fx:id="columnFieldType" prefWidth="-1.0" styleClass="tableColumn" text="Type" />
+                                        <TableColumn fx:id="columnRecordCnt" maxWidth="2500.0" prefWidth="-1.0" styleClass="tableColumn" text="Unique data #" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -102,17 +102,17 @@
                   <Label layoutX="10.0" layoutY="160.0" prefHeight="20.0" prefWidth="50.0" text="DBLink" />
                </children>
             </Pane>
-            <Button fx:id="btn_Test_Conn" onAction="#actionButtonPressed" layoutX="270.0" layoutY="20.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Test Connection" />
-            <Button fx:id="btn_Load_Data" onAction="#actionButtonPressed" disable="true" layoutX="270.0" layoutY="100.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Load Data" />
+            <Button fx:id="btn_Test_Conn" layoutX="270.0" layoutY="20.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="150.0" text="Test Connection" />
+            <Button fx:id="btn_Load_Data" disable="true" layoutX="270.0" layoutY="100.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="150.0" text="Load Data" />
             <ChoiceBox fx:id="chb_Patterns_List" layoutX="490.0" layoutY="20.0" prefHeight="25.0" prefWidth="150.0" />
-            <Button fx:id="btn_Save_Pattern" onAction="#actionButtonPressed" layoutX="490.0" layoutY="100.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Save Pattern" />
+            <Button fx:id="btn_Save_Pattern" layoutX="490.0" layoutY="100.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="150.0" text="Save Pattern" />
             <Pane layoutX="705.0" layoutY="10.0" prefHeight="200.0" prefWidth="177.0" styleClass="subMenu" AnchorPane.rightAnchor="15.0">
                <children>
-                  <CheckBox fx:id="cb_Create_Base_Tables" layoutX="15.0" layoutY="10.0" mnemonicParsing="false" text="Create Base Tables" />
-                  <CheckBox fx:id="cb_Update_RN" layoutX="15.0" layoutY="50.0" mnemonicParsing="false" text="Update Row Number" />
-                  <CheckBox fx:id="cb_Create_Res_Tables" layoutX="15.0" layoutY="90.0" mnemonicParsing="false" text="Create Result Tables" />
-                  <CheckBox fx:id="cb_Extract_Data" layoutX="15.0" layoutY="130.0" mnemonicParsing="false" text="Extract Data" />
-                  <Button fx:id="btn_Execute" disable="true" layoutX="20.0" layoutY="165.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="135.0" text="Execute" />
+                  <CheckBox fx:id="cb_Create_Base_Tables" disable="true" layoutX="15.0" layoutY="10.0" mnemonicParsing="false" text="Create Base Tables" />
+                  <CheckBox fx:id="cb_Update_RN" disable="true" layoutX="15.0" layoutY="50.0" mnemonicParsing="false" text="Update Row Number" />
+                  <CheckBox fx:id="cb_Create_Res_Tables" disable="true" layoutX="15.0" layoutY="90.0" mnemonicParsing="false" text="Create Result Tables" />
+                  <CheckBox fx:id="cb_Extract_Data" disable="true" layoutX="15.0" layoutY="130.0" mnemonicParsing="false" text="Extract Data" />
+                  <Button fx:id="btn_Execute" disable="true" layoutX="20.0" layoutY="165.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Execute" />
                </children>
             </Pane>
             <CustomTextField fx:id="txt_Pattern_Name" layoutX="490.0" layoutY="61.0" prefHeight="25.0" prefWidth="150.0" />

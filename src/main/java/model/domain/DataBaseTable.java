@@ -40,6 +40,9 @@ public class DataBaseTable {
             if(name.substring(0,4).equals("VT_R")){
                 return TableType.REPLICA;
             }
+            else if(name.substring(0,4).equals("VT_C")){
+                return TableType.COMPARE;
+            }
             else if(name.substring(0,4).equals("VT_E")){
                 return TableType.EXTRA;
             }

@@ -254,11 +254,11 @@ public class MainController {
                 cb_Extract_Data.setDisable(false);
                     cb_Update_RN.setSelected(true);
         }
-        if(selectedTable.getTableType() == TableType.EXTRA || selectedTable.getTableType() == TableType.ANALYSIS){
+        if(selectedTable.getTableType() == TableType.EXTRA || selectedTable.getTableType() == TableType.ANALYSIS || selectedTable.getTableType() == TableType.COMPARE){
             setDefaultValueForCheckBox();
                 cb_Create_Base_Tables.setDisable(true);
                 cb_Update_RN.setDisable(true);
-                cb_Create_Res_Tables.setDisable(false);
+                cb_Create_Res_Tables.setDisable(true);
                 cb_Extract_Data.setDisable(false);
                     cb_Extract_Data.setSelected(true);
         }

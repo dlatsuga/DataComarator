@@ -52,12 +52,12 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
                         "  ,count(cc.column_name) cnt_\n" +
                         "From all_objects tt\n" +
                         "     left join all_tab_columns cc on cc.owner = tt.owner and tt.object_name = cc.table_name\n" +
-//                "Where tt.object_type = 'TABLE' And tt.owner = 'TESTIMMD' And tt.object_name = 'VT_DTLS_TEST'\n" +
                         "Where tt.object_type = 'TABLE' And tt.owner in ('TESTIMMD','VT_TRN') And tt.object_name like 'VT_%'\n" +
                         "group by \n" +
                         "  tt.owner || tt.object_name\n" +
                         "  ,tt.owner\n" +
-                        "  ,tt.object_name";
+                        "  ,tt.object_name\n" +
+                        "order by tt.owner, tt.object_name";
         try {
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);

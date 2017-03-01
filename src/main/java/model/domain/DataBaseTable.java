@@ -3,7 +3,8 @@ package model.domain;
 public class DataBaseTable {
 
     private String objectKey;
-
+    private SchemaType schemaType;
+    private TableType tableType;
     private String schema;
     private String name;
     private int size;
@@ -20,6 +21,35 @@ public class DataBaseTable {
         this.size = 3;
         this.fieldsCount = fieldsCount;
         this.rowsCount = 5;
+        this.schemaType = defineSchemaType(schema);
+        this.tableType = defineTableType(schema, name);
+    }
+
+    private SchemaType defineSchemaType(String schema) {
+        if(schema.substring(0,3).equals("VT_")){
+            return SchemaType.VT;
+        }
+        return SchemaType.DEFAULT;
+    }
+
+    private TableType defineTableType(String schema, String name) {
+        if(schema.substring(0,3).equals("VT_")){
+            return TableType.BASE;
+        }
+        else{
+            if(name.substring(0,4).equals("VT_R")){
+                return TableType.REPLICA;
+            }
+            else if(name.substring(0,4).equals("VT_E")){
+                return TableType.EXTRA;
+            }
+            else if(name.substring(0,4).equals("VT_A")){
+                return TableType.ANALYSIS;
+            }
+            else{
+                return tableType.OTHER;
+            }
+        }
     }
 
     public String getObjectKey() {
@@ -27,6 +57,19 @@ public class DataBaseTable {
     }
     public void setObjectKey(String objectKey) {
         this.objectKey = objectKey;
+    }
+
+    public SchemaType getSchemaType() {
+        return schemaType;
+    }
+    public void setSchemaType(SchemaType schemaType) {
+        this.schemaType = schemaType;
+    }
+    public TableType getTableType() {
+        return tableType;
+    }
+    public void setTableType(TableType tableType) {
+        this.tableType = tableType;
     }
 
     public String getSchema() {
@@ -59,7 +102,6 @@ public class DataBaseTable {
     public void setRowsCount(int rowsCount) {
         this.rowsCount = rowsCount;
     }
-
 
     @Override
     public String toString() {

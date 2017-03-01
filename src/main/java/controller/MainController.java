@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import model.domain.DataBaseTable;
 import model.domain.KeyPattern;
 import model.domain.TableDescription;
+import model.domain.TableType;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import service.MainService;
@@ -45,6 +46,8 @@ public class MainController {
     private Parent fxmlKeySelector;
     private KeySelectorController keySelectorController;
     private Stage keySelectorStage;
+
+    private DataBaseTable selectedTable;
     private ObservableList<TableDescription> selectedTableDescriptionObservableList;
 
     private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
@@ -173,23 +176,22 @@ public class MainController {
     }
 
     private void initListeners() {
-//        tableDBObjects.getSelectionModel().selectedItemProperty().addListener((changed, oldVal, newVal) -> lblChoosenTable.setText("Table " + newVal.));
-
         tableDBObjects.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            //Check whether item is selected and set value of selected item to Label
-            if (tableDBObjects.getSelectionModel().getSelectedItem() != null &&
-                    tableDBObjects.getSelectionModel().getSelectedItem() instanceof DataBaseTable) {
-//                lblChoosenTable.setText(((DataBaseTable) newValue).getObjectKey());
-                selectedTableDescriptionObservableList = (ObservableList<TableDescription>) mainService.getHashMapOfTableDesc().get(((DataBaseTable) newValue).getObjectKey());
+            if (tableDBObjects.getSelectionModel().getSelectedItem() != null
+                && tableDBObjects.getSelectionModel().getSelectedItem() instanceof DataBaseTable) {
+
+                selectedTable = (DataBaseTable) newValue;
+                selectedTableDescriptionObservableList = (ObservableList<TableDescription>) mainService.getHashMapOfTableDesc().get(selectedTable.getObjectKey());
+
                 createListOfFields(selectedTableDescriptionObservableList);
                 tableTableDescription.setItems(selectedTableDescriptionObservableList);
 
                 setDefaultLabels();
-                enableCheckBox();
+                enableCheckBox(selectedTable);
                 btn_Execute.setDisable(false);
-
             }
         });
+
 
         chb_Patterns_List.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() {
@@ -200,18 +202,22 @@ public class MainController {
                             chb_Patterns_List.setValue(oldValue);
                             txt_Pattern_Name.clear();
                         }
-
-                        KeyPattern selectedKeyPattern =  patternService.getPatternInstanceByName(newValue);
-                        lbl_Key.setText(selectedKeyPattern.getKey_for_join());
-                        lbl_RN_List.setText(selectedKeyPattern.getRow_number_list());
-                        lbl_RN_Sort.setText(selectedKeyPattern.getRow_number_sort());
-                        lbl_Compare_Fields.setText(selectedKeyPattern.getCompare_fields());
-                        lbl_Initial_Fields.setText(selectedKeyPattern.getInitial_fields());
-                        lbl_Split_Key.setText(selectedKeyPattern.getExport_split_key());
+                        setSelectedPattern(newValue);
                     }
                 }
         );
     }
+
+    private void setSelectedPattern(String patternName){
+        KeyPattern selectedKeyPattern =  patternService.getPatternInstanceByName(patternName);
+        lbl_Key.setText(selectedKeyPattern.getKey_for_join());
+        lbl_RN_List.setText(selectedKeyPattern.getRow_number_list());
+        lbl_RN_Sort.setText(selectedKeyPattern.getRow_number_sort());
+        lbl_Compare_Fields.setText(selectedKeyPattern.getCompare_fields());
+        lbl_Initial_Fields.setText(selectedKeyPattern.getInitial_fields());
+        lbl_Split_Key.setText(selectedKeyPattern.getExport_split_key());
+    }
+
 
     private void loadKeyPattern(){
         patternService.loadKeyPatterns();
@@ -220,21 +226,58 @@ public class MainController {
     }
 
     private void setDefaultLabels(){
-            lbl_Key.setText("...");
-            lbl_RN_List.setText("...");
-            lbl_RN_Sort.setText("...");
-            lbl_Compare_Fields.setText("All");
-            lbl_Initial_Fields.setText("...");
-            lbl_Split_Key.setText("...");
+        lbl_Key.setText("...");
+        lbl_RN_List.setText("...");
+        lbl_RN_Sort.setText("...");
+        lbl_Compare_Fields.setText("All");
+        lbl_Initial_Fields.setText("...");
+        lbl_Split_Key.setText("...");
     }
 
-    private void enableCheckBox(){
+    private void enableCheckBox(DataBaseTable selectedTable){
+        if(selectedTable.getTableType() == TableType.BASE){
+            setDefaultValueForCheckBox();
+                cb_Create_Base_Tables.setDisable(false);
+                cb_Update_RN.setDisable(false);
+                cb_Create_Res_Tables.setDisable(false);
+                cb_Extract_Data.setDisable(false);
+                    cb_Create_Base_Tables.setSelected(true);
+                    cb_Update_RN.setSelected(true);
+                    cb_Create_Res_Tables.setSelected(true);
+                    cb_Extract_Data.setSelected(true);
+        }
+        if(selectedTable.getTableType() == TableType.REPLICA){
+            setDefaultValueForCheckBox();
+                cb_Create_Base_Tables.setDisable(true);
+                cb_Update_RN.setDisable(false);
+                cb_Create_Res_Tables.setDisable(false);
+                cb_Extract_Data.setDisable(false);
+                    cb_Update_RN.setSelected(true);
+        }
+        if(selectedTable.getTableType() == TableType.EXTRA || selectedTable.getTableType() == TableType.ANALYSIS){
+            setDefaultValueForCheckBox();
+                cb_Create_Base_Tables.setDisable(true);
+                cb_Update_RN.setDisable(true);
+                cb_Create_Res_Tables.setDisable(false);
+                cb_Extract_Data.setDisable(false);
+                    cb_Extract_Data.setSelected(true);
+        }
 
-        cb_Create_Base_Tables.setDisable(false);
-        cb_Update_RN.setDisable(false);
-        cb_Create_Res_Tables.setDisable(false);
-        cb_Extract_Data.setDisable(false);
     }
+
+    private void setDefaultValueForCheckBox(){
+        cb_Create_Base_Tables.setSelected(false);
+        cb_Update_RN.setSelected(false);
+        cb_Create_Res_Tables.setSelected(false);
+        cb_Extract_Data.setSelected(false);
+    }
+
+    private String checkTableName(String name) {
+        return null;
+    }
+
+
+
 
     private void enableButtons(){
         btn_Key.setDisable(false);

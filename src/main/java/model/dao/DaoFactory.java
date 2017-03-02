@@ -11,15 +11,21 @@ public class DaoFactory {
     private Connection conn;
     private DaoDataBaseTable daoDataBaseTable;
     private DaoTableDescription daoTableDescription;
+    private DaoProcedure daoProcedure;
+
     private static DaoFactory instance;
 
 //    private static String url = "jdbc:postgresql://localhost:5432/sqlexcomputers";
 //    private static String user = "postgres";
 //    private static String password = "Ldg131531";
 
-    private static String url = "jdbc:oracle:thin:@DK01SN7007:1521:T7007204";
-    private static String user = "TESTIMMD";
-    private static String password = "TESTIMMD";
+//    private static String url = "jdbc:oracle:thin:@DK01SN7007:1521:T7007204";
+//    private static String user = "TESTIMMD";
+//    private static String password = "TESTIMMD";
+
+    private static String url;
+    private static String user;
+    private static String password;
 
     public static String getUrl() {
         return url;
@@ -59,6 +65,14 @@ public class DaoFactory {
         }
         return daoTableDescription;
     }
+
+    public DaoProcedure getDaoProcedure() {
+        if (daoProcedure == null) {
+            daoProcedure = new DaoProcedureImpl(conn);
+        }
+        return daoProcedure;
+    }
+
 
     private DaoFactory(Connection conn) {
         this.conn = conn;

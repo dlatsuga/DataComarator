@@ -6,6 +6,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -41,8 +42,9 @@ public class MainController {
     private MainService mainService = new MainService();
     private PatternService patternService = new PatternService();
     private ProcedureService procedureService = new ProcedureService();
+    private DialogManager dialogManager = new DialogManager();
 
-    private FXMLLoader fxmlLoader = new FXMLLoader();
+    private FXMLLoader fxmlLoader;
     private Parent fxmlKeySelector;
     private KeySelectorController keySelectorController;
     private Stage keySelectorStage;
@@ -141,7 +143,13 @@ public class MainController {
     private CheckBox cb_Extract_Data;
 
     @FXML
+    private CheckBox cb_RecordCnt;
+
+    @FXML
     private Pane pane_connection;
+
+    @FXML
+    private ProgressIndicator progressIndicator;
 
     @FXML
     public void initialize() throws ConnectionRefusedException {
@@ -242,9 +250,8 @@ public class MainController {
                 cb_Create_Res_Tables.setDisable(false);
                 cb_Extract_Data.setDisable(false);
                     cb_Create_Base_Tables.setSelected(true);
-                    cb_Update_RN.setSelected(true);
-                    cb_Create_Res_Tables.setSelected(true);
-                    cb_Extract_Data.setSelected(true);
+                    cb_Update_RN.setSelected(false);
+                    cb_Create_Res_Tables.setSelected(false);
         }
         if(selectedTable.getTableType() == TableType.REPLICA){
             setDefaultValueForCheckBox();
@@ -307,12 +314,15 @@ public class MainController {
     }
 
     private void initLoader() {
-        try {
-            fxmlLoader.setLocation(getClass().getResource("../view/selector_form.fxml"));
-            fxmlKeySelector = fxmlLoader.load();
-            keySelectorController = fxmlLoader.getController();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(fxmlLoader == null){
+            try {
+                fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(getClass().getResource("../view/selector_form.fxml"));
+                fxmlKeySelector = fxmlLoader.load();
+                keySelectorController = fxmlLoader.getController();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -323,28 +333,38 @@ public class MainController {
         Button clickedButton = (Button) source;
         switch (clickedButton.getId()) {
             case "btn_Test_Conn":
+                progressIndicator.setVisible(true);
+
+                Thread dbThread = new Thread(taskTestConnection);
+                dbThread.start();
+
                 try {
-                    mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
-                    boolean isValidConnection =  mainService.isValidConnection();
-                    if (isValidConnection){
-                        btn_Load_Data.setDisable(false);
-                        pane_connection.getStyleClass().clear();
-                        pane_connection.getStyleClass().add("subMenu");
-                    }
-                } catch (ConnectionRefusedException e) {
-                    pane_connection.getStyleClass().clear();
-                    pane_connection.getStyleClass().add("rejected");
-                    DialogManager.showErrorDialog(e);
+                    dbThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    dialogManager.showErrorDialog(e);
                 }
+
+                progressIndicator.setVisible(false);
+                    boolean isValidConnection =  mainService.isValidConnection();
+                        if (isValidConnection){
+                            btn_Load_Data.setDisable(false);
+                            pane_connection.getStyleClass().clear();
+                            pane_connection.getStyleClass().add("subMenu");
+                        }
                 break;
             case "btn_Load_Data":
                 try {
-                    tableDBObjects.setItems(mainService.getTableListForView());
-                    initLoader();
-                    enableButtons();
+//                    dialogManager.showInfoDialog("Load Data", "Data loading. Please wait");
+                        tableDBObjects.setItems(mainService.getTableListForView());
+                        mainService.convertListToHashMap(cb_RecordCnt.isSelected());
+                        initLoader();
+                        enableButtons();
+//                    dialogManager.closeInfoDialog();
                 } catch (ConnectionRefusedException e) {
-                    System.out.println(e.getMessage());
-                    System.out.println(e.getCause().getClass().getSimpleName());
+                        System.out.println(e.getMessage());
+                        System.out.println(e.getCause().getClass().getSimpleName());
+                    dialogManager.showErrorDialog(e);
                 }
                 break;
             case "btn_Save_Pattern":
@@ -360,12 +380,6 @@ public class MainController {
 //                chb_Patterns_List.setValue(txt_Pattern_Name.getText());
                 chb_Patterns_List.setItems(FXCollections.observableArrayList(patternService.getPatternsName()));
                 txt_Pattern_Name.clear();
-                break;
-
-            case "btn_Execute":
-
-                System.out.println("Call Procedure");
-
                 break;
             case "btn_Key":
                 selectionView.getSourceItems().setAll(listOfSelectedFields);
@@ -397,8 +411,41 @@ public class MainController {
                 lbl_Initial_Fields.setText(generateKey(selectionView.getTargetItems()));
                 selectionView.getTargetItems().clear();
                 break;
+            case "btn_Execute":
+                boolean[] checkBoxArray = new boolean[]{cb_Create_Base_Tables.isSelected()
+                                                       ,cb_Update_RN.isSelected()
+                                                       ,cb_Create_Res_Tables.isSelected()
+                                                       ,cb_Extract_Data.isSelected()};
+                try {
+//                    dialogManager.showInfoDialog("Procedure execution", "PL/SQL procedure executing. Please wait");
+                    procedureService.executeProcedure(checkBoxArray);
+//                    dialogManager.closeInfoDialog();
+//                    DialogManager.showInfoDialog("Procedure completed", "PL/SQL procedure successfully completed");
+                } catch (ConnectionRefusedException e) {
+                    dialogManager.showErrorDialog(e);
+                }
+                break;
         }
     }
+
+
+    Task taskTestConnection = new Task<Void>() {
+        @Override public Void call() {
+            try {
+                mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+            } catch (ConnectionRefusedException e) {
+                pane_connection.getStyleClass().clear();
+                pane_connection.getStyleClass().add("rejected");
+                dialogManager.showErrorDialog(e);
+            }
+            return null;
+        }
+    };
+
+
+
+
+
 
     private void showDialog() {
 

@@ -1,26 +1,26 @@
 package service;
 
 
+import exceptions.ConnectionRefusedException;
+import model.dao.DaoFactory;
+import model.dao.DaoProcedure;
+
 public class ProcedureService {
+    private DaoProcedure daoProcedure;
+    public void executeProcedure(boolean[] checkBoxArray) throws ConnectionRefusedException {
+        if(checkBoxArray[0]){
+            System.out.println("Start executeProcedureToCreateBaseTables");
+            executeProcedureToCreateBaseTables();
+            System.out.println("Done executeProcedureToCreateBaseTables");
+        }
 
-//    public void callProcedure(boolean isTableSelected, boolean isCreateBaseTables, boolean isUpdateRN, boolean isCreateResTables, boolean isExtractData){
-//
-//    }
+    }
 
-//    http://stackoverflow.com/questions/33061280/how-to-call-a-stored-procedure-in-jdbc
+    private void executeProcedureToCreateBaseTables() throws ConnectionRefusedException {
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        daoProcedure = daoFactory.getDaoProcedure();
+        daoProcedure.callProcedureToCreateBaseTables();
+    }
 
-
-
-/*
-
-DK01SN7007
-1521
-T7007204
-
-TESTIMMD
-TESTIMMD
-
-
-*/
 
 }

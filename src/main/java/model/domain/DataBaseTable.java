@@ -14,13 +14,13 @@ public class DataBaseTable {
     public DataBaseTable() {
     }
 
-    public DataBaseTable(String key, String schema, String name, int fieldsCount) {
+    public DataBaseTable(String key, String schema, String name,int size, int fieldsCount, int rowsCount) {
         this.objectKey = key;
         this.schema = schema;
         this.name = name;
-        this.size = 3;
+        this.size = size;
         this.fieldsCount = fieldsCount;
-        this.rowsCount = 5;
+        this.rowsCount = rowsCount;
         this.schemaType = defineSchemaType(schema);
         this.tableType = defineTableType(schema, name);
     }

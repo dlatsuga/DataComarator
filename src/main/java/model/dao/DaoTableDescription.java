@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface DaoTableDescription {
     TableDescription findTableDescriptionByName(String schema, String tableName);
-    List<TableDescription> findAllTablesDescription();
+    List<TableDescription> findAllTablesDescription(boolean isUniqueCnt);
     Set<String> getSetOfTableKey();
     void close();
 }

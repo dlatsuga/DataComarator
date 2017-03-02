@@ -3,6 +3,7 @@ package service;
 import exceptions.ConnectionRefusedException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import model.dao.DaoDataBaseTable;
 import model.dao.DaoFactory;
 import model.dao.DaoTableDescription;
@@ -40,28 +41,21 @@ public class MainService {
     }
 
     public HashMap<String, ObservableList<TableDescription>> getHashMapOfTableDesc() {
-        if(descriptionHashMap == null) {
-            try {
-                descriptionHashMap = convertListToHashMap();
-            } catch (ConnectionRefusedException e) {
-                e.printStackTrace();
-            }
-        }
        return descriptionHashMap;
     }
 
-    private HashMap<String,ObservableList<TableDescription>> convertListToHashMap() throws ConnectionRefusedException {
-        List<TableDescription> listOfDesc = getDaoTableDescription().findAllTablesDescription();
+    public void convertListToHashMap(boolean isUniqueCnt) throws ConnectionRefusedException {
+        List<TableDescription> listOfDesc = getDaoTableDescription().findAllTablesDescription(isUniqueCnt);
         Set<String> setOfTableKey = daoTableDescription.getSetOfTableKey();
         HashMap<String, ObservableList<TableDescription>> hashMap = new HashMap<>(40);
         for (String s : setOfTableKey) {
             List<TableDescription> result = listOfDesc.stream() 			//convert list to stream
-                    .filter(line -> s. equals (line.getTableKey()))	//filters the line, equals to "mkyong"
+                    .filter(line -> s. equals (line.getTableKey()))
                     .collect(Collectors.toList());
             tableDescriptionList = FXCollections.observableArrayList(result);
             hashMap.put(s, tableDescriptionList);
         }
-        return hashMap;
+        descriptionHashMap = hashMap;
     }
 
     private DaoTableDescription getDaoTableDescription() throws ConnectionRefusedException {
@@ -69,12 +63,13 @@ public class MainService {
         return daoTableDescription = daoFactory.getDaoTableDescription();
     }
 
+
     public void testConnection(String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
         isValidConnection = false;
         DaoFactory.createUrl(host, port, sid);
         DaoFactory.setUser(user);
         DaoFactory.setPassword(password);
-
         isValidConnection = DaoFactory.testConnection();
     }
+
 }

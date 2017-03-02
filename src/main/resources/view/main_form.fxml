@@ -116,6 +116,8 @@
                </children>
             </Pane>
             <CustomTextField fx:id="txt_Pattern_Name" layoutX="490.0" layoutY="61.0" prefHeight="25.0" prefWidth="150.0" />
+            <CheckBox fx:id="cb_RecordCnt" layoutX="271.0" layoutY="60.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Unique data #" />
+            <ProgressIndicator fx:id="progressIndicator" layoutX="423.0" layoutY="128.0" prefHeight="87.0" prefWidth="63.0" visible="false" />
          </children>
       </AnchorPane>
    </top>

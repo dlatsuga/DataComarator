@@ -43,19 +43,27 @@ public class DaoTableDescriptionImpl implements DaoTableDescription {
         return null;
     }
 
-    public List<TableDescription> findAllTablesDescription() {
+    public List<TableDescription> findAllTablesDescription(boolean isUniqueCnt) {
+
+        String uniqueCnt;
+        if(isUniqueCnt){
+            uniqueCnt =
+                    "    ,case \n" +
+                    "      when cc.data_type = 'VARCHAR2' then\n" +
+                    "      TESTIMMD.REC_COUNT(cc.column_name,cc.table_name,cc.owner)\n" +
+                    "      else 0\n" +
+                    "    end as cnt\n";
+        }else{
+            uniqueCnt = "   ,0 as cnt\n";
+        }
+
         String sql =
                 "  Select \n" +
                         "    cc.owner || '.' || cc.table_name as table_key\n" +
                         "    ,cc.column_name\n" +
                         "    ,cc.data_type\n" +
-//                "    ,case \n" +
-//                "      when cc.data_type = 'VARCHAR2' then\n" +
-//                "      TESTIMMD.REC_COUNT(cc.column_name,cc.table_name,cc.owner)\n" +
-//                "      else 0\n" +
-//                "    end as cnt\n" +
-                        "   ,777 as cnt\n" +
-                        "  from all_tab_columns cc where cc.owner in ('TESTIMMD','VT_TRN') and cc.table_name like 'VT_%'";
+                        uniqueCnt +
+                        "  from all_tab_columns cc where cc.table_name like 'VT_%'";
         try {
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);

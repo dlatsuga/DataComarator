@@ -13,15 +13,23 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class DialogManager {
-    public static void showInfoDialog(String title, String text){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private Alert alert;
+
+
+    public void showInfoDialog(String title, String text){
+        alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setContentText(text);
         alert.setHeaderText("");
         alert.showAndWait();
     }
-    public static void showErrorDialog(Exception ex){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+    public void closeInfoDialog(){
+        alert.hide();
+    }
+
+    public void showErrorDialog(Exception ex){
+        alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(ex.getCause().getClass().getSimpleName());
         alert.setHeaderText("Error: " + ex.getCause().getClass().getSimpleName());
         alert.setContentText(ex.getMessage());
@@ -58,4 +66,7 @@ public class DialogManager {
                 .getResource("icon/Exclamation.png").toString()));
         alert.showAndWait();
     }
+
+
+
 }

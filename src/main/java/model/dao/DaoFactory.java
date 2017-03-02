@@ -95,6 +95,7 @@ public class DaoFactory {
     public static boolean testConnection() throws ConnectionRefusedException {
         boolean isValid = false;
         try {
+            System.out.println("Метка 2 " + Thread.currentThread().getName());
             Connection conn = DriverManager.getConnection(url, user, password);
             conn.close();
             isValid = true;

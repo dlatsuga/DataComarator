@@ -6,8 +6,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -44,6 +47,8 @@ public class MainController {
     private ProcedureService procedureService = new ProcedureService();
     private DialogManager dialogManager = new DialogManager();
 
+    private Service<Void> backgroundService;
+
     private FXMLLoader fxmlLoader;
     private Parent fxmlKeySelector;
     private KeySelectorController keySelectorController;
@@ -54,6 +59,9 @@ public class MainController {
 
     private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
     private ListSelectionView<String> selectionView = new ListSelectionView<>();
+
+
+    private boolean isTestConnectionFinished = false;
 
 
 
@@ -333,25 +341,79 @@ public class MainController {
         Button clickedButton = (Button) source;
         switch (clickedButton.getId()) {
             case "btn_Test_Conn":
+
                 progressIndicator.setVisible(true);
 
-                Thread dbThread = new Thread(taskTestConnection);
-                dbThread.start();
+                System.out.println("Метка 0 " + Thread.currentThread().getName());
 
-                try {
-                    dbThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    dialogManager.showErrorDialog(e);
-                }
 
-                progressIndicator.setVisible(false);
-                    boolean isValidConnection =  mainService.isValidConnection();
-                        if (isValidConnection){
-                            btn_Load_Data.setDisable(false);
-                            pane_connection.getStyleClass().clear();
-                            pane_connection.getStyleClass().add("subMenu");
-                        }
+//                runTask = mainService.runTask(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+
+                Task<Boolean> task = new Task<Boolean>() {
+                    @Override
+                    protected Boolean call() throws Exception {
+                        return mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+                    }
+                };
+
+                task.setOnRunning(event ->
+//                        dialogManager.showInfoDialog("TMP", "TMP")
+                        progressIndicator.setVisible(true)
+                );
+                task.setOnSucceeded(event -> {
+//                    dialogManager.closeInfoDialog();
+                    isTestConnectionFinished = task.getValue();
+                    System.out.println(isTestConnectionFinished + " Good");
+                    btn_Load_Data.setDisable(false);
+                    pane_connection.getStyleClass().clear();
+                    pane_connection.getStyleClass().add("subMenu");
+                    progressIndicator.setVisible(false);
+                });
+
+                task.setOnFailed(event -> {
+                    if (task.getException() instanceof ConnectionRefusedException){
+                        pane_connection.getStyleClass().clear();
+                        pane_connection.getStyleClass().add("rejected");
+                        dialogManager.showErrorDialog((Exception) task.getException());
+                        progressIndicator.setVisible(false);
+                    }
+                });
+
+                new Thread(task).start();
+//                runTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//                    @Override
+//                    public void handle(WorkerStateEvent event) {
+//                        isTestConnectionFinished = runTask.getValue();
+//                        System.out.println("Everything is Ok ");
+//                    }
+//                });
+//
+//                runTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
+//                    @Override
+//                    public void handle(WorkerStateEvent event) {
+//                        System.out.println("Error ");
+//                        isTestConnectionFinished = true;
+//                    }
+//                });
+
+//                new Thread(runTask).start();
+
+//                try {
+//                    mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+//                } catch (ConnectionRefusedException e) {
+//                    pane_connection.getStyleClass().clear();
+//                    pane_connection.getStyleClass().add("rejected");
+//                    dialogManager.showErrorDialog(e);
+//                }
+
+//                progressIndicator.setVisible(false);
+//
+//                    boolean isValidConnection =  mainService.isValidConnection();
+//                        if (isValidConnection){
+//                            btn_Load_Data.setDisable(false);
+//                            pane_connection.getStyleClass().clear();
+//                            pane_connection.getStyleClass().add("subMenu");
+//                        }
                 break;
             case "btn_Load_Data":
                 try {
@@ -429,18 +491,9 @@ public class MainController {
     }
 
 
-    Task taskTestConnection = new Task<Void>() {
-        @Override public Void call() {
-            try {
-                mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
-            } catch (ConnectionRefusedException e) {
-                pane_connection.getStyleClass().clear();
-                pane_connection.getStyleClass().add("rejected");
-                dialogManager.showErrorDialog(e);
-            }
-            return null;
-        }
-    };
+
+
+
 
 
 

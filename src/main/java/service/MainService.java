@@ -64,12 +64,32 @@ public class MainService {
     }
 
 
-    public void testConnection(String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
+    public boolean testConnection(String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
         isValidConnection = false;
         DaoFactory.createUrl(host, port, sid);
         DaoFactory.setUser(user);
         DaoFactory.setPassword(password);
-        isValidConnection = DaoFactory.testConnection();
+        return isValidConnection = DaoFactory.testConnection();
     }
+
+//    public Task<Boolean> runTask(String host, String port, String sid, String user, String password)  throws InterruptedException{
+//        return new Task<Boolean>() {
+//            @Override
+//            protected Boolean call() throws InterruptedException {
+//
+//                isValidConnection = false;
+//                DaoFactory.createUrl(host, port, sid);
+//                DaoFactory.setUser(user);
+//                DaoFactory.setPassword(password);
+//                try {
+//                    isValidConnection = DaoFactory.testConnection();
+//                } catch (ConnectionRefusedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                return isValidConnection;
+//            }
+//        };
+//    }
 
 }

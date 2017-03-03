@@ -214,8 +214,20 @@ public class MainController {
         );
     }
 
+
+
+
+
+
+
+
+    /*Валидацию полей повесить тут...*/
+
+    /**
+     * Set value for Keys according to Selected pattern*/
     private void setSelectedPattern(String patternName){
         KeyPattern selectedKeyPattern =  patternService.getPatternInstanceByName(patternName);
+
         lbl_Key.setText(selectedKeyPattern.getKey_for_join());
         lbl_RN_List.setText(selectedKeyPattern.getRow_number_list());
         lbl_RN_Sort.setText(selectedKeyPattern.getRow_number_sort());
@@ -223,6 +235,12 @@ public class MainController {
         lbl_Initial_Fields.setText(selectedKeyPattern.getInitial_fields());
         lbl_Split_Key.setText(selectedKeyPattern.getExport_split_key());
     }
+
+
+
+
+
+
 
 
     private void loadKeyPattern(){

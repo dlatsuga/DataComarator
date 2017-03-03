@@ -8,11 +8,12 @@ import java.sql.SQLException;
 
 public class DaoFactory {
 
-    private Connection conn;
+
     private DaoDataBaseTable daoDataBaseTable;
     private DaoTableDescription daoTableDescription;
     private DaoProcedure daoProcedure;
 
+    private static Connection conn;
     private static DaoFactory instance;
 
 //    private static String url = "jdbc:postgresql://localhost:5432/sqlexcomputers";
@@ -79,12 +80,18 @@ public class DaoFactory {
     }
 
     public static DaoFactory getInstance() throws ConnectionRefusedException {
-        if (instance == null) {
-            try {
-                Connection conn = DriverManager.getConnection(url, user, password);
-                instance = new DaoFactory(conn);
-                System.out.println("Done");
 
+        boolean isClosedConnection = true;
+        try {
+            isClosedConnection = conn.isClosed();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (instance == null || isClosedConnection) {
+            try {
+                conn = DriverManager.getConnection(url, user, password);
+                instance = new DaoFactory(conn);
             } catch (SQLException e) {
                 throw new ConnectionRefusedException();
             }
@@ -94,13 +101,19 @@ public class DaoFactory {
 
     public static boolean testConnection() throws ConnectionRefusedException {
         boolean isValid = false;
+//        conn = null;
         try {
-            System.out.println("Метка 2 " + Thread.currentThread().getName());
-            Connection conn = DriverManager.getConnection(url, user, password);
-            conn.close();
+            conn = DriverManager.getConnection(url, user, password);
             isValid = true;
         } catch (SQLException e) {
             throw new ConnectionRefusedException(e.getMessage(), e);
+        }
+        finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                throw new ConnectionRefusedException(e.getMessage(), e);
+            }
         }
         return isValid;
     }

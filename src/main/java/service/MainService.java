@@ -32,6 +32,8 @@ public class MainService {
     public ObservableList<DataBaseTable> getTableListForView() throws ConnectionRefusedException {
         List<DataBaseTable> listOfTables = getDaoDataBaseTable().findAllTablesOfVnT();
         tableList = FXCollections.observableArrayList(listOfTables);
+
+        daoDataBaseTable.close();
         return tableList;
     }
 
@@ -56,6 +58,8 @@ public class MainService {
             hashMap.put(s, tableDescriptionList);
         }
         descriptionHashMap = hashMap;
+
+//        daoTableDescription.close(); -- do not close till execute -- getTableListForView()
     }
 
     private DaoTableDescription getDaoTableDescription() throws ConnectionRefusedException {
@@ -71,25 +75,5 @@ public class MainService {
         DaoFactory.setPassword(password);
         return isValidConnection = DaoFactory.testConnection();
     }
-
-//    public Task<Boolean> runTask(String host, String port, String sid, String user, String password)  throws InterruptedException{
-//        return new Task<Boolean>() {
-//            @Override
-//            protected Boolean call() throws InterruptedException {
-//
-//                isValidConnection = false;
-//                DaoFactory.createUrl(host, port, sid);
-//                DaoFactory.setUser(user);
-//                DaoFactory.setPassword(password);
-//                try {
-//                    isValidConnection = DaoFactory.testConnection();
-//                } catch (ConnectionRefusedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                return isValidConnection;
-//            }
-//        };
-//    }
 
 }

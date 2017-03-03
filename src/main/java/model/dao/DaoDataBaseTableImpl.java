@@ -90,13 +90,12 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
         } catch (SQLException e) {
             return null;
         }
-
-
     }
 
     public void close() {
         try {
             conn.close();
+            System.out.println("Dao Data Base Table -- Close");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -64,6 +64,9 @@ public class DaoTableDescriptionImpl implements DaoTableDescription {
                         "    ,cc.data_type\n" +
                         uniqueCnt +
                         "  from all_tab_columns cc where cc.table_name like 'VT_%'";
+
+        System.out.println("Data Loading...");
+
         try {
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -86,6 +89,7 @@ public class DaoTableDescriptionImpl implements DaoTableDescription {
     public void close() {
         try {
             conn.close();
+            System.out.println("Dao Table Description -- Close");
         } catch (SQLException e) {
             e.printStackTrace();
         }

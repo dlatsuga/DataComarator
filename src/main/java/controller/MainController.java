@@ -6,11 +6,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,8 +44,6 @@ public class MainController {
     private ProcedureService procedureService = new ProcedureService();
     private DialogManager dialogManager = new DialogManager();
 
-    private Service<Void> backgroundService;
-
     private FXMLLoader fxmlLoader;
     private Parent fxmlKeySelector;
     private KeySelectorController keySelectorController;
@@ -59,11 +54,6 @@ public class MainController {
 
     private ObservableList<String> listOfSelectedFields = FXCollections.observableArrayList();
     private ListSelectionView<String> selectionView = new ListSelectionView<>();
-
-
-    private boolean isTestConnectionFinished = false;
-
-
 
     @FXML
     private TableView tableDBObjects;
@@ -287,12 +277,12 @@ public class MainController {
         cb_Extract_Data.setSelected(false);
     }
 
-    private String checkTableName(String name) {
-        return null;
+    private void disableCheckBox(){
+        cb_Create_Base_Tables.setDisable(true);
+        cb_Update_RN.setDisable(true);
+        cb_Create_Res_Tables.setDisable(true);
+        cb_Extract_Data.setDisable(true);
     }
-
-
-
 
     private void enableButtons(){
         btn_Key.setDisable(false);
@@ -303,6 +293,16 @@ public class MainController {
         btn_Split_Key.setDisable(false);
     }
 
+    private void disableButtons(){
+        btn_Key.setDisable(true);
+        btn_RN_List.setDisable(true);
+        btn_RN_Sort.setDisable(true);
+        btn_Compare_Fields.setDisable(true);
+        btn_Initial_Fields.setDisable(true);
+        btn_Split_Key.setDisable(true);
+
+        btn_Execute.setDisable(true);
+    }
 
     private void setupClearButtonField(CustomTextField customTextField) {
         try {
@@ -342,92 +342,68 @@ public class MainController {
         switch (clickedButton.getId()) {
             case "btn_Test_Conn":
 
+                disableButtons();
+                disableCheckBox();
+
                 progressIndicator.setVisible(true);
 
-                System.out.println("Метка 0 " + Thread.currentThread().getName());
-
-
-//                runTask = mainService.runTask(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
-
-                Task<Boolean> task = new Task<Boolean>() {
+                Task<Boolean> taskTestConnection = new Task<Boolean>() {
                     @Override
                     protected Boolean call() throws Exception {
                         return mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
                     }
                 };
-
-                task.setOnRunning(event ->
-//                        dialogManager.showInfoDialog("TMP", "TMP")
-                        progressIndicator.setVisible(true)
-                );
-                task.setOnSucceeded(event -> {
-//                    dialogManager.closeInfoDialog();
-                    isTestConnectionFinished = task.getValue();
-                    System.out.println(isTestConnectionFinished + " Good");
-                    btn_Load_Data.setDisable(false);
-                    pane_connection.getStyleClass().clear();
-                    pane_connection.getStyleClass().add("subMenu");
-                    progressIndicator.setVisible(false);
+                taskTestConnection.setOnRunning(event -> progressIndicator.setVisible(true));
+                taskTestConnection.setOnSucceeded(event -> {
+                        btn_Load_Data.setDisable(false);
+                        pane_connection.getStyleClass().clear();
+                        pane_connection.getStyleClass().add("subMenu");
+                        progressIndicator.setVisible(false);
                 });
-
-                task.setOnFailed(event -> {
-                    if (task.getException() instanceof ConnectionRefusedException){
+                taskTestConnection.setOnFailed(event -> {
                         pane_connection.getStyleClass().clear();
                         pane_connection.getStyleClass().add("rejected");
-                        dialogManager.showErrorDialog((Exception) task.getException());
                         progressIndicator.setVisible(false);
-                    }
+                        dialogManager.showErrorDialog((Exception) taskTestConnection.getException());
                 });
 
-                new Thread(task).start();
-//                runTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-//                    @Override
-//                    public void handle(WorkerStateEvent event) {
-//                        isTestConnectionFinished = runTask.getValue();
-//                        System.out.println("Everything is Ok ");
-//                    }
-//                });
-//
-//                runTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
-//                    @Override
-//                    public void handle(WorkerStateEvent event) {
-//                        System.out.println("Error ");
-//                        isTestConnectionFinished = true;
-//                    }
-//                });
+                new Thread(taskTestConnection).start();
 
-//                new Thread(runTask).start();
-
-//                try {
-//                    mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
-//                } catch (ConnectionRefusedException e) {
-//                    pane_connection.getStyleClass().clear();
-//                    pane_connection.getStyleClass().add("rejected");
-//                    dialogManager.showErrorDialog(e);
-//                }
-
-//                progressIndicator.setVisible(false);
-//
-//                    boolean isValidConnection =  mainService.isValidConnection();
-//                        if (isValidConnection){
-//                            btn_Load_Data.setDisable(false);
-//                            pane_connection.getStyleClass().clear();
-//                            pane_connection.getStyleClass().add("subMenu");
-//                        }
                 break;
             case "btn_Load_Data":
-                try {
-//                    dialogManager.showInfoDialog("Load Data", "Data loading. Please wait");
-                        tableDBObjects.setItems(mainService.getTableListForView());
+
+                disableButtons();
+                disableCheckBox();
+
+                Task<ObservableList<DataBaseTable>> taskLoadData = new Task<ObservableList<DataBaseTable>>() {
+                    @Override
+                    protected ObservableList<DataBaseTable> call() throws Exception {
                         mainService.convertListToHashMap(cb_RecordCnt.isSelected());
-                        initLoader();
-                        enableButtons();
-//                    dialogManager.closeInfoDialog();
-                } catch (ConnectionRefusedException e) {
-                        System.out.println(e.getMessage());
-                        System.out.println(e.getCause().getClass().getSimpleName());
-                    dialogManager.showErrorDialog(e);
-                }
+                        return mainService.getTableListForView();
+                    }
+                };
+                taskLoadData.setOnRunning(event -> {
+                    progressIndicator.setVisible(true);
+                    btn_Test_Conn.setDisable(true);
+                    btn_Load_Data.setDisable(true);
+                });
+                taskLoadData.setOnSucceeded(event -> {
+                    tableDBObjects.setItems(taskLoadData.getValue());
+                    initLoader();
+                    enableButtons();
+                    progressIndicator.setVisible(false);
+                    btn_Test_Conn.setDisable(false);
+                    btn_Load_Data.setDisable(false);
+                });
+                taskLoadData.setOnFailed(event -> {
+                        progressIndicator.setVisible(false);
+                        dialogManager.showErrorDialog((Exception) taskLoadData.getException());
+                        btn_Test_Conn.setDisable(false);
+                        btn_Load_Data.setDisable(false);
+                });
+
+                new Thread(taskLoadData).start();
+
                 break;
             case "btn_Save_Pattern":
                 patternService.updateKeyPatternList(txt_Pattern_Name.getText()
@@ -438,8 +414,6 @@ public class MainController {
                         ,lbl_Initial_Fields.getText()
                         ,lbl_Split_Key.getText());
                 patternService.saveKeyPatternList();
-//                patternService.loadKeyPatterns();
-//                chb_Patterns_List.setValue(txt_Pattern_Name.getText());
                 chb_Patterns_List.setItems(FXCollections.observableArrayList(patternService.getPatternsName()));
                 txt_Pattern_Name.clear();
                 break;
@@ -478,27 +452,31 @@ public class MainController {
                                                        ,cb_Update_RN.isSelected()
                                                        ,cb_Create_Res_Tables.isSelected()
                                                        ,cb_Extract_Data.isSelected()};
-                try {
-//                    dialogManager.showInfoDialog("Procedure execution", "PL/SQL procedure executing. Please wait");
-                    procedureService.executeProcedure(checkBoxArray);
-//                    dialogManager.closeInfoDialog();
-//                    DialogManager.showInfoDialog("Procedure completed", "PL/SQL procedure successfully completed");
-                } catch (ConnectionRefusedException e) {
-                    dialogManager.showErrorDialog(e);
-                }
+                String[] keysValueArray = new String[]{lbl_Key.getText()
+                                                      ,lbl_RN_List.getText()
+                                                      ,lbl_RN_Sort.getText()
+                                                      ,lbl_Compare_Fields.getText()
+                                                      ,lbl_Initial_Fields.getText()
+                                                      ,lbl_Split_Key.getText()};
+                Task<String> taskExecuteProcedure = new Task<String>() {
+                    @Override
+                    protected String call() throws Exception {
+                        return procedureService.executeProcedure(checkBoxArray, keysValueArray);
+                    }
+                };
+                taskExecuteProcedure.setOnRunning(event -> progressIndicator.setVisible(true));
+                taskExecuteProcedure.setOnSucceeded(event -> {
+                    progressIndicator.setVisible(false);
+                    System.out.println(taskExecuteProcedure.getValue());
+                });
+                taskExecuteProcedure.setOnFailed(event -> {
+                        progressIndicator.setVisible(false);
+                        dialogManager.showErrorDialog((Exception) taskExecuteProcedure.getException());
+                });
+                new Thread(taskExecuteProcedure).start();
                 break;
         }
     }
-
-
-
-
-
-
-
-
-
-
 
     private void showDialog() {
 
@@ -510,22 +488,16 @@ public class MainController {
             keySelectorStage.setResizable(false);
             keySelectorStage.setScene(new Scene(fxmlKeySelector));
 
-//            view.getSourceItems().addAll("Katja", "Dirk", "Philip", "Jule", "Armin");
-
-//            ((GridPane)keySelectorStage.getScene().getRoot()).add(view, 0, 0);
-//            ((GridPane)keySelectorStage.getScene().getRoot()).setAlignment(Pos.CENTER);
-
             ((Label) selectionView.getSourceHeader()).setText("Available");
             ((Label) selectionView.getTargetHeader()).setText("Selected");
             keySelectorController.getKeySelectorGridPane().add(selectionView, 0, 0);
             keySelectorController.getKeySelectorGridPane().setAlignment(Pos.CENTER);
 
-
             keySelectorStage.initModality(Modality.WINDOW_MODAL);
             keySelectorStage.initOwner(mainStage);
         }
 
-        keySelectorStage.showAndWait(); // для ожидания закрытия окна
+        keySelectorStage.showAndWait();
 
     }
 

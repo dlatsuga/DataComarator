@@ -7,18 +7,20 @@ public class KeyPattern {
     private String row_number_sort;
     private String compare_fields;
     private String initial_fields;
+    private String group_fields;
     private String export_split_key;
 
     public KeyPattern() {
     }
 
-    public KeyPattern(String name, String key_for_join, String row_number_list, String row_number_sort, String compare_fields, String initial_fields, String export_split_key) {
+    public KeyPattern(String name, String key_for_join, String row_number_list, String row_number_sort, String compare_fields, String initial_fields, String group_key, String export_split_key) {
         this.name = name;
         this.key_for_join = key_for_join;
         this.row_number_list = row_number_list;
         this.row_number_sort = row_number_sort;
         this.compare_fields = compare_fields;
         this.initial_fields = initial_fields;
+        this.group_fields = group_key;
         this.export_split_key = export_split_key;
     }
 
@@ -58,10 +60,20 @@ public class KeyPattern {
     public void setInitial_fields(String initial_fields) {
         this.initial_fields = initial_fields;
     }
+
+    public String getGroup_fields() {
+        return group_fields;
+    }
+    public void setGroup_fields(String group_fields) {
+        this.group_fields = group_fields;
+    }
+
     public String getExport_split_key() {
         return export_split_key;
     }
     public void setExport_split_key(String export_split_key) {
         this.export_split_key = export_split_key;
     }
+
+
 }

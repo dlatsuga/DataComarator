@@ -89,6 +89,8 @@ public class MainController {
     @FXML
     private Label lbl_Initial_Fields;
     @FXML
+    private Label lbl_Group_Key;
+    @FXML
     private Label lbl_Split_Key;
 
     @FXML
@@ -125,6 +127,8 @@ public class MainController {
     private Button btn_Compare_Fields;
     @FXML
     private Button btn_Initial_Fields;
+    @FXML
+    private Button btn_Group_Key;
     @FXML
     private Button btn_Split_Key;
 
@@ -233,6 +237,7 @@ public class MainController {
         lbl_RN_Sort.setText(selectedKeyPattern.getRow_number_sort());
         lbl_Compare_Fields.setText(selectedKeyPattern.getCompare_fields());
         lbl_Initial_Fields.setText(selectedKeyPattern.getInitial_fields());
+        lbl_Group_Key.setText(selectedKeyPattern.getGroup_fields());
         lbl_Split_Key.setText(selectedKeyPattern.getExport_split_key());
     }
 
@@ -255,6 +260,7 @@ public class MainController {
         lbl_RN_Sort.setText("...");
         lbl_Compare_Fields.setText("All");
         lbl_Initial_Fields.setText("...");
+        lbl_Group_Key.setText("...");
         lbl_Split_Key.setText("...");
     }
 
@@ -308,6 +314,7 @@ public class MainController {
         btn_RN_Sort.setDisable(false);
         btn_Compare_Fields.setDisable(false);
         btn_Initial_Fields.setDisable(false);
+        btn_Group_Key.setDisable(false);
         btn_Split_Key.setDisable(false);
     }
 
@@ -317,6 +324,7 @@ public class MainController {
         btn_RN_Sort.setDisable(true);
         btn_Compare_Fields.setDisable(true);
         btn_Initial_Fields.setDisable(true);
+        btn_Group_Key.setDisable(true);
         btn_Split_Key.setDisable(true);
 
         btn_Execute.setDisable(true);
@@ -430,6 +438,7 @@ public class MainController {
                         ,lbl_RN_Sort.getText()
                         ,lbl_Compare_Fields.getText()
                         ,lbl_Initial_Fields.getText()
+                        ,lbl_Group_Key.getText()
                         ,lbl_Split_Key.getText());
                 patternService.saveKeyPatternList();
                 chb_Patterns_List.setItems(FXCollections.observableArrayList(patternService.getPatternsName()));
@@ -465,6 +474,18 @@ public class MainController {
                 lbl_Initial_Fields.setText(generateKey(selectionView.getTargetItems()));
                 selectionView.getTargetItems().clear();
                 break;
+            case "btn_Group_Key":
+                selectionView.getSourceItems().setAll(listOfSelectedFields);
+                showDialog();
+                lbl_Group_Key.setText(generateKey(selectionView.getTargetItems()));
+                selectionView.getTargetItems().clear();
+                break;
+            case "btn_Split_Key":
+                selectionView.getSourceItems().setAll(listOfSelectedFields);
+                showDialog();
+                lbl_Split_Key.setText(generateKey(selectionView.getTargetItems()));
+                selectionView.getTargetItems().clear();
+                break;
             case "btn_Execute":
                 boolean[] checkBoxArray = new boolean[]{cb_Create_Base_Tables.isSelected()
                                                        ,cb_Update_RN.isSelected()
@@ -475,6 +496,7 @@ public class MainController {
                                                       ,lbl_RN_Sort.getText()
                                                       ,lbl_Compare_Fields.getText()
                                                       ,lbl_Initial_Fields.getText()
+                                                      ,lbl_Group_Key.getText()
                                                       ,lbl_Split_Key.getText()};
                 Task<String> taskExecuteProcedure = new Task<String>() {
                     @Override
@@ -501,7 +523,7 @@ public class MainController {
         if (keySelectorStage == null) {
             keySelectorStage = new Stage();
             keySelectorStage.setTitle("Select Fields");
-            keySelectorStage.setMinHeight(275);
+            keySelectorStage.setMinHeight(300);
             keySelectorStage.setMinWidth(400);
             keySelectorStage.setResizable(false);
             keySelectorStage.setScene(new Scene(fxmlKeySelector));

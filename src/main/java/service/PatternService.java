@@ -61,7 +61,7 @@ public class PatternService {
         return null;
     }
 
-    public void updateKeyPatternList(String name, String key_for_join, String row_number_list, String row_number_sort, String compare_fields, String initial_fields, String export_split_key) {
+    public void updateKeyPatternList(String name, String key_for_join, String row_number_list, String row_number_sort, String compare_fields, String initial_fields, String group_key, String export_split_key) {
         KeyPattern keyPattern = getPatternInstanceByName(name);
         if (keyPattern != null) {
             keyPatterns.remove(keyPattern);
@@ -70,10 +70,11 @@ public class PatternService {
             keyPattern.setRow_number_sort(row_number_sort);
             keyPattern.setCompare_fields(compare_fields);
             keyPattern.setInitial_fields(initial_fields);
+            keyPattern.setGroup_fields(group_key);
             keyPattern.setExport_split_key(export_split_key);
             keyPatterns.add(keyPattern);
         } else {
-            keyPattern = new KeyPattern(name, key_for_join, row_number_list, row_number_sort, compare_fields, initial_fields, export_split_key);
+            keyPattern = new KeyPattern(name, key_for_join, row_number_list, row_number_sort, compare_fields, initial_fields, group_key, export_split_key);
             keyPatterns.add(keyPattern);
             patternsName.add(name);
         }

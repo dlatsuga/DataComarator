@@ -9,7 +9,7 @@
         <module name="scd.dataComparator" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="scd.dataComparator" target="1.8" />
     </bytecodeTargetLevel>
   </component>

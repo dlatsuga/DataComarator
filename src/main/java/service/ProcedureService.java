@@ -80,7 +80,7 @@ public class ProcedureService {
             arrayOfParametersToCreateResultTable[3] = createJoinCondition(keysValueArray[0], true); // master join condition
             arrayOfParametersToCreateResultTable[4] = createJoinCondition(keysValueArray[0], false); // test join condition
 
-            arrayOfParametersToCreateResultTable[5] = createGroupByFields(keysValueArray[5]);  // group_by_fields
+            arrayOfParametersToCreateResultTable[5] = createGroupByKey(keysValueArray[5]);  // group_by_fields
 
         return arrayOfParametersToCreateResultTable;
     }
@@ -149,7 +149,7 @@ public class ProcedureService {
         return result;
     }
 
-    private String createGroupByFields(String groupByFields){
+    private String createGroupByKey(String groupByFields){
         List<String> listGroupByFields = splitFields(groupByFields);
         StringBuilder sb = new StringBuilder();
         String tmp;
@@ -158,8 +158,12 @@ public class ProcedureService {
             tmp = " || nvl(m." + fieldName + ",t." + fieldName +")";
             sb.append(tmp);
         }
-        result = sb.toString().substring(4, sb.toString().length()) + " BASE_FIELD";
+        result = sb.toString().substring(4, sb.toString().length()) + " GROUP_KEY";
         return result;
     }
+
+//    private String createSplitKey(String splitKey){
+//
+//    }
 
 }

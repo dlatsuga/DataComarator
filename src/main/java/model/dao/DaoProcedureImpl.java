@@ -1,9 +1,11 @@
 package model.dao;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import com.opencsv.CSVWriter;
+
+import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DaoProcedureImpl implements DaoProcedure {
     Connection conn;
@@ -81,30 +83,46 @@ public class DaoProcedureImpl implements DaoProcedure {
 
 
     public void executeExportQuery(String splitKey) {
-        String sql =
-                "SPOOL \"\\U:\\DTLS_TMP\\CFD.TXT\"\n" +
-                "SET sqlformat DELIMITED ; \" \"\n" +
-                "SELECT /*delimited*/ * FROM VT_DTLS_TMP tt WHERE tt.secs_instype = 'CFD';\n" +
-                "SPOOL OFF";
+        String sql_base = "Select BASE_FIELD from VT_ANALYSIS_DTLS group by BASE_FIELD";
+//        String sql_base = "Select ? from VT_ANALYSIS_DTLS group by ?";
+        List<String> listForFilter = new ArrayList<>();
+        try{
+            PreparedStatement preparedStatement = conn.prepareStatement(sql_base);
+//            preparedStatement.setString(1, splitKey);
+//            preparedStatement.setString(2, splitKey);
 
-//        try {
-//            Statement statement = conn.createStatement();
-//            statement.execute(sql);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-        ScriptRunner runner = new ScriptRunner(conn, true, true);
-        try {
-            runner.runScript(new BufferedReader(new FileReader("U:\\DTLS_TMP\\dtls_tmp.sql")));
-        } catch (IOException e) {
+            ResultSet resultSetOfUniqueDataForFilter = preparedStatement.executeQuery();
+            while (resultSetOfUniqueDataForFilter.next()){
+                listForFilter.add(resultSetOfUniqueDataForFilter.getString(1));
+            }
+        }
+        catch (SQLException e){
             e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }
+
+        for (String filterValue : listForFilter) {
+            try {
+                String sql = "Select * from VT_ANALYSIS_DTLS where BASE_FIELD = ? ";
+                PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
+                preparedStatement2.setString(1, filterValue);
+                preparedStatement2.setFetchSize(100000);
+
+                ResultSet res = preparedStatement2.executeQuery();
+
+                File file = new File("U:\\DTLS_TMP\\export\\" + filterValue + "\\" + filterValue + "_records.csv");
+                file.getParentFile().mkdirs();
+                try (CSVWriter writer = new CSVWriter(new FileWriter(file), ';')) {
+                    writer.writeAll(res, true);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+            }
         }
     }
 
-//ScriptRunner runner = new ScriptRunner(con, [booleanAutoCommit], [booleanStopOnerror]);
-//runner.runScript(new BufferedReader(new FileReader("test.sql")));
 
     public void close() {
         try {

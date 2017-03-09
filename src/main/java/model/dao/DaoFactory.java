@@ -106,6 +106,7 @@ public class DaoFactory {
             conn = DriverManager.getConnection(url, user, password);
             isValid = true;
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new ConnectionRefusedException(e.getMessage(), e);
         }
         finally {

@@ -46,8 +46,9 @@ public class MainService {
        return descriptionHashMap;
     }
 
-    public void convertListToHashMap(boolean isUniqueCnt) throws ConnectionRefusedException {
-        List<TableDescription> listOfDesc = getDaoTableDescription().findAllTablesDescription(isUniqueCnt);
+    public void convertListToHashMap(boolean isUniqueCnt, String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
+        System.out.println("Inside convertListToHashMap " + Thread.currentThread().getName());
+        List<TableDescription> listOfDesc = getDaoTableDescription(host, port, sid, user, password).findAllTablesDescription(isUniqueCnt);
         Set<String> setOfTableKey = daoTableDescription.getSetOfTableKey();
         HashMap<String, ObservableList<TableDescription>> hashMap = new HashMap<>(40);
         for (String s : setOfTableKey) {
@@ -62,7 +63,11 @@ public class MainService {
 //        daoTableDescription.close(); -- do not close till execute -- getTableListForView()
     }
 
-    private DaoTableDescription getDaoTableDescription() throws ConnectionRefusedException {
+    private DaoTableDescription getDaoTableDescription(String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
+        DaoFactory.createUrl(host, port, sid);
+        DaoFactory.setUser(user);
+        DaoFactory.setPassword(password);
+
         DaoFactory daoFactory = DaoFactory.getInstance();
         return daoTableDescription = daoFactory.getDaoTableDescription();
     }

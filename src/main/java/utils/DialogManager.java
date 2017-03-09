@@ -29,10 +29,12 @@ public class DialogManager {
     }
 
     public void showErrorDialog(Exception ex){
+
+        System.out.println("ShowErrorDialog " + Thread.currentThread().getName());
+
         alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(ex.getCause().getClass().getSimpleName());
-        alert.setHeaderText("Error: " + ex.getCause().getClass().getSimpleName());
-        alert.setContentText(ex.getMessage());
+        System.out.println(ex.getClass().getSimpleName());
+
 
 // Create expandable Exception.
         StringWriter sw = new StringWriter();
@@ -61,9 +63,18 @@ public class DialogManager {
 // Get the Stage.
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 // Add a custom icon.
+//        stage.getIcons().add(new Image(Thread.currentThread()
+//                .getContextClassLoader()
+//                .getResource("icon/Exclamation.png").toString()));
         stage.getIcons().add(new Image(Thread.currentThread()
                 .getContextClassLoader()
                 .getResource("icon/Exclamation.png").toString()));
+
+        alert.setTitle(ex.getClass().getSimpleName());
+        alert.setHeaderText("Error: " + ex.getClass().getSimpleName());
+        alert.setContentText(ex.getMessage());
+
+
         alert.showAndWait();
     }
 

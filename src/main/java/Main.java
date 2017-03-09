@@ -21,7 +21,7 @@ public class Main extends Application {
         mainController.setMainStage(primaryStage);
 
         primaryStage.setTitle("V&T DataBase Comparator");
-        primaryStage.setScene(new Scene(fxmlMain, 900, 800));
+        primaryStage.setScene(new Scene(fxmlMain, 1000, 800));
         primaryStage.setResizable(false);
 
 

@@ -65,7 +65,6 @@ public class DaoTableDescriptionImpl implements DaoTableDescription {
                         uniqueCnt +
                         "  from all_tab_columns cc where cc.table_name like 'VT_%'";
 
-        System.out.println("Data Loading...");
 
         try {
             Statement statement = conn.createStatement();

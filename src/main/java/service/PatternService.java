@@ -16,6 +16,8 @@ public class PatternService {
     private File file;
     private Gson gson;
 
+    private String path = System.getProperty("user.dir") + "\\patterns.json";
+
     public List<KeyPattern> getKeyPatterns() {
         return keyPatterns;
     }
@@ -34,21 +36,37 @@ public class PatternService {
 
         gson = new Gson();
         patternsName = new HashSet<>();
-        try {
-            file = new File(Thread.currentThread()
-                .getContextClassLoader()
-                .getResource("patterns/patterns.json").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        try {
-            keyPatterns = new ArrayList<KeyPattern>(Arrays.asList(gson.fromJson(new FileReader(file), KeyPattern[].class)));
+
+
+//        try {
+//            file = new File(Thread.currentThread()
+//                .getContextClassLoader()
+//                .getResource("patterns/patterns.json").toURI());
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
+
+
+        try(BufferedReader reader = new BufferedReader(new FileReader(path))){
+            keyPatterns = new ArrayList<KeyPattern>(Arrays.asList(gson.fromJson(reader, KeyPattern[].class)));
             for (KeyPattern keyPattern : keyPatterns) {
                 patternsName.add(keyPattern.getName());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+
+//        try {
+//            keyPatterns = new ArrayList<KeyPattern>(Arrays.asList(gson.fromJson(new FileReader(file), KeyPattern[].class)));
+//            for (KeyPattern keyPattern : keyPatterns) {
+//                patternsName.add(keyPattern.getName());
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public KeyPattern getPatternInstanceByName(String patternName) {
@@ -82,23 +100,34 @@ public class PatternService {
 
     public void saveKeyPatternList() {
 
-        try {
-            file = new File(Thread.currentThread()
-                    .getContextClassLoader()
-                    .getResource("patterns/patterns.json").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
 
-        try (Writer writer = new FileWriter(file)) {
+        try(FileWriter writer = new FileWriter(path)){
             gson = new GsonBuilder()
                     .setPrettyPrinting()
                     .create();
             gson.toJson(keyPatterns, writer);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+//        try {
+//            file = new File(Thread.currentThread()
+//                    .getContextClassLoader()
+//                    .getResource("patterns/patterns.json").toURI());
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try (Writer writer = new FileWriter(file)) {
+//            gson = new GsonBuilder()
+//                    .setPrettyPrinting()
+//                    .create();
+//            gson.toJson(keyPatterns, writer);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 

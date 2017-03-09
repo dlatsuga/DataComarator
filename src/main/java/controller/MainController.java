@@ -39,7 +39,7 @@ import java.lang.reflect.Method;
 public class MainController {
 
     private Stage mainStage;
-    private MainService mainService = new MainService();
+    private MainService mainService = null;
     private PatternService patternService = new PatternService();
     private ProcedureService procedureService = new ProcedureService();
     private DialogManager dialogManager = new DialogManager();
@@ -155,6 +155,7 @@ public class MainController {
 
     @FXML
     public void initialize() throws ConnectionRefusedException {
+
         columnSchema.setCellValueFactory(new PropertyValueFactory<DataBaseTable, String>("schema"));
         columnObjectName.setCellValueFactory(new PropertyValueFactory<DataBaseTable, String>("name"));
         columnObjectSize.setCellValueFactory(new PropertyValueFactory<DataBaseTable, Integer>("size"));
@@ -175,6 +176,12 @@ public class MainController {
         setupClearButtonField(txt_User);
         setupClearButtonField(txt_DB_Link);
         setupClearButtonField(txt_Pattern_Name);
+
+        txt_Host.setText("DK01SN7007");
+        txt_Port.setText("1521");
+        txt_Sid.setText("T7007204");
+        txt_User.setText("TESTIMMD");
+        txt_Pwd.setText("TESTIMMD");
 
         initListeners();
 //        initLoader();
@@ -202,7 +209,6 @@ public class MainController {
             }
         });
 
-
         chb_Patterns_List.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() {
                     @Override
@@ -217,10 +223,6 @@ public class MainController {
                 }
         );
     }
-
-
-
-
 
 
 
@@ -240,11 +242,6 @@ public class MainController {
         lbl_Group_Key.setText(selectedKeyPattern.getGroup_fields());
         lbl_Split_Key.setText(selectedKeyPattern.getExport_split_key());
     }
-
-
-
-
-
 
 
 
@@ -331,11 +328,15 @@ public class MainController {
     }
 
     private void setupClearButtonField(CustomTextField customTextField) {
+
         try {
+
             Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
             m.setAccessible(true);
             m.invoke(null, customTextField, customTextField.rightProperty());
+
         }catch (Exception e){
+
             e.printStackTrace();
         }
     }
@@ -348,13 +349,22 @@ public class MainController {
     }
 
     private void initLoader() {
+        System.out.println("Inside initLoader 1 " + Thread.currentThread().getName());
         if(fxmlLoader == null){
             try {
-                fxmlLoader = new FXMLLoader();
-                fxmlLoader.setLocation(getClass().getResource("../view/selector_form.fxml"));
-                fxmlKeySelector = fxmlLoader.load();
+
+                fxmlLoader = new FXMLLoader(getClass().getResource("/view/selector_form.fxml"));
+
+//                fxmlLoader.setLocation(getClass().getResource("/view/selector_form.fxml"));
+                System.out.println("Inside initLoader 2 " + Thread.currentThread().getName());
+                fxmlKeySelector = (Parent) fxmlLoader.load();
+                System.out.println("Inside initLoader 3 " + Thread.currentThread().getName());
                 keySelectorController = fxmlLoader.getController();
+
+
+                System.out.println("Inside initLoader 6 " + Thread.currentThread().getName());
             } catch (IOException e) {
+                System.out.println("IOException " + Thread.currentThread().getName());
                 e.printStackTrace();
             }
         }
@@ -367,6 +377,7 @@ public class MainController {
         Button clickedButton = (Button) source;
         switch (clickedButton.getId()) {
             case "btn_Test_Conn":
+                System.out.println("Test connection " + Thread.currentThread().getName());
 
                 disableButtons();
                 disableCheckBox();
@@ -376,44 +387,54 @@ public class MainController {
                 Task<Boolean> taskTestConnection = new Task<Boolean>() {
                     @Override
                     protected Boolean call() throws Exception {
+                        mainService = new MainService();
                         return mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
                     }
                 };
-                taskTestConnection.setOnRunning(event -> progressIndicator.setVisible(true));
+                taskTestConnection.setOnRunning(event -> {
+                    progressIndicator.setVisible(true);
+                });
                 taskTestConnection.setOnSucceeded(event -> {
+                    System.out.println("setOnSucceeded " + Thread.currentThread().getName());
                         btn_Load_Data.setDisable(false);
                         pane_connection.getStyleClass().clear();
                         pane_connection.getStyleClass().add("subMenu");
                         progressIndicator.setVisible(false);
                 });
                 taskTestConnection.setOnFailed(event -> {
+                    System.out.println("setOnFailed " + Thread.currentThread().getName());
                         pane_connection.getStyleClass().clear();
                         pane_connection.getStyleClass().add("rejected");
                         progressIndicator.setVisible(false);
+
                         dialogManager.showErrorDialog((Exception) taskTestConnection.getException());
+
                 });
 
                 new Thread(taskTestConnection).start();
 
                 break;
             case "btn_Load_Data":
-
+                System.out.println("Start Load Data " + Thread.currentThread().getName());
                 disableButtons();
                 disableCheckBox();
 
                 Task<ObservableList<DataBaseTable>> taskLoadData = new Task<ObservableList<DataBaseTable>>() {
                     @Override
                     protected ObservableList<DataBaseTable> call() throws Exception {
-                        mainService.convertListToHashMap(cb_RecordCnt.isSelected());
+                        System.out.println("Start convertListToHashMap " + Thread.currentThread().getName());
+                        mainService.convertListToHashMap(cb_RecordCnt.isSelected(), txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
                         return mainService.getTableListForView();
                     }
                 };
                 taskLoadData.setOnRunning(event -> {
+                    System.out.println("setOnRunning convertListToHashMap " + Thread.currentThread().getName());
                     progressIndicator.setVisible(true);
                     btn_Test_Conn.setDisable(true);
                     btn_Load_Data.setDisable(true);
                 });
                 taskLoadData.setOnSucceeded(event -> {
+                    System.out.println("setOnSucceeded convertListToHashMap " + Thread.currentThread().getName());
                     tableDBObjects.setItems(taskLoadData.getValue());
                     initLoader();
                     enableButtons();
@@ -422,10 +443,13 @@ public class MainController {
                     btn_Load_Data.setDisable(false);
                 });
                 taskLoadData.setOnFailed(event -> {
+                        System.out.println("setOnFailed convertListToHashMap " + Thread.currentThread().getName());
                         progressIndicator.setVisible(false);
-                        dialogManager.showErrorDialog((Exception) taskLoadData.getException());
                         btn_Test_Conn.setDisable(false);
                         btn_Load_Data.setDisable(false);
+                        tableDBObjects.setItems(null);
+                        tableTableDescription.setItems(null);
+                        dialogManager.showErrorDialog((Exception) taskLoadData.getException());
                 });
 
                 new Thread(taskLoadData).start();

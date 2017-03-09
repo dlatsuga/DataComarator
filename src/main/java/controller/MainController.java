@@ -393,6 +393,8 @@ public class MainController {
                 };
                 taskTestConnection.setOnRunning(event -> {
                     progressIndicator.setVisible(true);
+                    tableDBObjects.setItems(null);
+                    tableTableDescription.setItems(null);
                 });
                 taskTestConnection.setOnSucceeded(event -> {
                     System.out.println("setOnSucceeded " + Thread.currentThread().getName());
@@ -432,6 +434,8 @@ public class MainController {
                     progressIndicator.setVisible(true);
                     btn_Test_Conn.setDisable(true);
                     btn_Load_Data.setDisable(true);
+                    tableDBObjects.setItems(null);
+                    tableTableDescription.setItems(null);
                 });
                 taskLoadData.setOnSucceeded(event -> {
                     System.out.println("setOnSucceeded convertListToHashMap " + Thread.currentThread().getName());
@@ -447,8 +451,7 @@ public class MainController {
                         progressIndicator.setVisible(false);
                         btn_Test_Conn.setDisable(false);
                         btn_Load_Data.setDisable(false);
-                        tableDBObjects.setItems(null);
-                        tableTableDescription.setItems(null);
+
                         dialogManager.showErrorDialog((Exception) taskLoadData.getException());
                 });
 

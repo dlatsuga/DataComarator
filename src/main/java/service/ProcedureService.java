@@ -70,7 +70,7 @@ public class ProcedureService {
 
 
     private String[] parametersConverter(String[] keysValueArray) {
-        String[] arrayOfParametersToCreateResultTable = new String[6];
+        String[] arrayOfParametersToCreateResultTable = new String[7];
 
             arrayOfParametersToCreateResultTable[0] = transformCompareFieldsInSqlCase(keysValueArray[3]);   // case_fields
             arrayOfParametersToCreateResultTable[1] = decodeCompareFieldsForDiff(keysValueArray[3]);    // decode_fields
@@ -81,6 +81,8 @@ public class ProcedureService {
             arrayOfParametersToCreateResultTable[4] = createJoinCondition(keysValueArray[0], false); // test join condition
 
             arrayOfParametersToCreateResultTable[5] = createGroupByKey(keysValueArray[5]);  // group_by_fields
+
+            arrayOfParametersToCreateResultTable[6] = createSplitKey(keysValueArray[6]);  // split_fields
 
         return arrayOfParametersToCreateResultTable;
     }
@@ -162,8 +164,19 @@ public class ProcedureService {
         return result;
     }
 
-//    private String createSplitKey(String splitKey){
-//
-//    }
+    private String createSplitKey(String splitFields){
+        List<String> listSplitFields = splitFields(splitFields);
+        StringBuilder sb = new StringBuilder();
+        String tmp;
+        String result;
+        for (String fieldName : listSplitFields) {
+            tmp = " || nvl(m." + fieldName + ",t." + fieldName +")";
+            sb.append(tmp);
+        }
+        result = sb.toString().substring(4, sb.toString().length()) + " SPLIT_KEY";
+        return result;
+    }
+
+
 
 }

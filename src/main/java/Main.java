@@ -25,7 +25,7 @@ public class Main extends Application {
         primaryStage.setResizable(false);
 
 
-            Image applicationMainIcon = new Image(getClass().getResourceAsStream("icon/Main.png"));
+            Image applicationMainIcon = new Image(getClass().getResourceAsStream("icon/Data Extract.png"));
             primaryStage.getIcons().add(applicationMainIcon);
 
         primaryStage.show();

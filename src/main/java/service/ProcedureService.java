@@ -10,11 +10,13 @@ import java.util.List;
 
 public class ProcedureService {
     private DaoProcedure daoProcedure;
-    public String executeProcedure(boolean[] checkBoxArray, String[] keysValueArray) throws ConnectionRefusedException {
+    public String executeProcedure(boolean[] checkBoxArray, String[] keysValueArray, String selectedTableSchema, String selectedTableName) throws ConnectionRefusedException {
         String result = null;
         if(checkBoxArray[0]){
             System.out.println("Start Create Base Tables");
-            result = executeProcedureToCreateBaseTables();
+            System.out.println(selectedTableSchema);
+            System.out.println(selectedTableName);
+            result = executeProcedureToCreateBaseTables(selectedTableSchema, selectedTableName);
             System.out.println("Done Create Base Tables");
         }
         if(checkBoxArray[1]){
@@ -35,10 +37,10 @@ public class ProcedureService {
         return result;
     }
 
-    private String executeProcedureToCreateBaseTables() throws ConnectionRefusedException {
+    private String executeProcedureToCreateBaseTables(String selectedTableSchema, String selectedTableName) throws ConnectionRefusedException {
         DaoFactory daoFactory = DaoFactory.getInstance();
         daoProcedure = daoFactory.getDaoProcedure();
-        return daoProcedure.callProcedureToCreateBaseTables();
+        return daoProcedure.callProcedureToCreateBaseTables(selectedTableSchema, selectedTableName);
     }
 
     private String executeProcedureUpdateRowNumber(String rnList, String rnSort) throws ConnectionRefusedException {
@@ -66,8 +68,6 @@ public class ProcedureService {
 //  4   ,lbl_Initial_Fields.getText()
 //  5   ,lbl_Group_Key.getText()
 //  6   ,lbl_Split_Key.getText()};
-
-
 
     private String[] parametersConverter(String[] keysValueArray) {
         String[] arrayOfParametersToCreateResultTable = new String[7];
@@ -176,7 +176,4 @@ public class ProcedureService {
         result = sb.toString().substring(4, sb.toString().length()) + " SPLIT_KEY";
         return result;
     }
-
-
-
 }

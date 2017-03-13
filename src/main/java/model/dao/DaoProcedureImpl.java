@@ -15,15 +15,21 @@ public class DaoProcedureImpl implements DaoProcedure {
         this.conn = conn;
     }
 
-    public String callProcedureToCreateBaseTables(){
-        String sql = "{call VT_CREATE_BASE_TABLES(?)}";
+    public String callProcedureToCreateBaseTables(String selectedTableSchema, String selectedTableName){
+        String sql = "{call VT_CREATE_BASE_TABLES(?,?,?,?)}";
         String result = "TEST CREATE BASE TABLES";
+        String selectedMasterTableName = selectedTableName;
+        String selectedTestTableName = selectedTableName.replaceAll("(?i)master", "TEST");
+
         try
         {
             CallableStatement callableStatementForCreateBaseTables = conn.prepareCall(sql);
-            callableStatementForCreateBaseTables.registerOutParameter(1, Types.VARCHAR);
+            callableStatementForCreateBaseTables.setString(1, selectedTableSchema);
+            callableStatementForCreateBaseTables.setString(2, selectedMasterTableName);
+            callableStatementForCreateBaseTables.setString(3, selectedTestTableName);
+            callableStatementForCreateBaseTables.registerOutParameter(4, Types.VARCHAR);
             callableStatementForCreateBaseTables.executeUpdate();
-            result = callableStatementForCreateBaseTables.getString(1);
+            result = callableStatementForCreateBaseTables.getString(4);
         }
         catch (SQLException e)
         {
@@ -108,9 +114,9 @@ public class DaoProcedureImpl implements DaoProcedure {
 
     private void exportTotalAnalysisData(String timeStamp){
         try {
-            String sql = "Select * from VT_ANALYSIS_DTLS ORDER BY Diff";
+            String sql = "Select * from VT_ANALYSIS_DTLS ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
-            statement.setFetchSize(100000);
+            statement.setFetchSize(1000);
 
             ResultSet res = statement.executeQuery(sql);
 
@@ -138,10 +144,10 @@ public class DaoProcedureImpl implements DaoProcedure {
         for (String filterValue : listForFilter) {
 
             try {
-                String sql = "Select * from VT_ANALYSIS_DTLS where SPLIT_KEY = ? ORDER BY Diff";
+                String sql = "Select * from VT_ANALYSIS_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
                 PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
                 preparedStatement2.setString(1, filterValue);
-                preparedStatement2.setFetchSize(100000);
+                preparedStatement2.setFetchSize(1000);
 
                 ResultSet res = preparedStatement2.executeQuery();
 
@@ -160,9 +166,9 @@ public class DaoProcedureImpl implements DaoProcedure {
 
     private void exportTotalCompareData(String timeStamp){
         try {
-            String sql = "Select * from VT_COMPARE_DTLS ORDER BY Diff";
+            String sql = "Select * from VT_COMPARE_DTLS ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
-            statement.setFetchSize(100000);
+            statement.setFetchSize(1000);
 
             ResultSet res = statement.executeQuery(sql);
 
@@ -190,10 +196,10 @@ public class DaoProcedureImpl implements DaoProcedure {
         for (String filterValue : listForFilter) {
 
             try {
-                String sql = "Select * from VT_COMPARE_DTLS where SPLIT_KEY = ? ORDER BY Diff";
+                String sql = "Select * from VT_COMPARE_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
                 PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
                 preparedStatement2.setString(1, filterValue);
-                preparedStatement2.setFetchSize(100000);
+                preparedStatement2.setFetchSize(1000);
 
                 ResultSet res = preparedStatement2.executeQuery();
 
@@ -212,9 +218,9 @@ public class DaoProcedureImpl implements DaoProcedure {
 
     private void exportTotalExtraMaster(String timeStamp){
         try {
-            String sql = "Select * from VT_EXTRA_MASTER_DTLS ORDER BY Diff";
+            String sql = "Select * from VT_EXTRA_MASTER_DTLS ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
-            statement.setFetchSize(100000);
+            statement.setFetchSize(1000);
 
             ResultSet res = statement.executeQuery(sql);
 
@@ -231,9 +237,9 @@ public class DaoProcedureImpl implements DaoProcedure {
 
     private void exportTotalExtraTest(String timeStamp){
         try {
-            String sql = "Select * from VT_EXTRA_TEST_DTLS ORDER BY Diff";
+            String sql = "Select * from VT_EXTRA_TEST_DTLS ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
-            statement.setFetchSize(100000);
+            statement.setFetchSize(1000);
 
             ResultSet res = statement.executeQuery(sql);
 

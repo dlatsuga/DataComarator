@@ -22,7 +22,10 @@ public class Main extends Application {
 
         primaryStage.setTitle("V&T DataBase Comparator");
         primaryStage.setScene(new Scene(fxmlMain, 1000, 800));
-        primaryStage.setResizable(false);
+        primaryStage.setMinHeight(700);
+        primaryStage.setMaxHeight(900);
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMaxWidth(1000);
 
 
             Image applicationMainIcon = new Image(getClass().getResourceAsStream("icon/Data Extract.png"));

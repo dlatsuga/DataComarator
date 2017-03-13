@@ -102,10 +102,13 @@ public class DaoFactory {
     public static boolean testConnection() throws ConnectionRefusedException {
         boolean isValid = false;
 //        conn = null;
+        System.out.println("Inside testConnection");
         try {
             conn = DriverManager.getConnection(url, user, password);
+            System.out.println("Inside testConnection getConnection");
             isValid = true;
         } catch (SQLException e) {
+            System.out.println("Inside testConnection SQLException");
             e.printStackTrace();
             throw new ConnectionRefusedException(e.getMessage(), e);
         }

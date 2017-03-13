@@ -528,7 +528,7 @@ public class MainController {
                 Task<String> taskExecuteProcedure = new Task<String>() {
                     @Override
                     protected String call() throws Exception {
-                        return procedureService.executeProcedure(checkBoxArray, keysValueArray);
+                        return procedureService.executeProcedure(checkBoxArray, keysValueArray, selectedTable.getSchema(), selectedTable.getName());
                     }
                 };
                 taskExecuteProcedure.setOnRunning(event -> progressIndicator.setVisible(true));

@@ -20,10 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.domain.DataBaseTable;
-import model.domain.KeyPattern;
-import model.domain.TableDescription;
-import model.domain.TableType;
+import model.domain.*;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import service.MainService;
@@ -31,6 +28,7 @@ import service.MainService;
 import org.controlsfx.control.ListSelectionView;
 import service.PatternService;
 import service.ProcedureService;
+import utils.DataBaseComparatorConfigManager;
 import utils.DialogManager;
 
 import java.io.IOException;
@@ -43,6 +41,7 @@ public class MainController {
     private PatternService patternService = new PatternService();
     private ProcedureService procedureService = new ProcedureService();
     private DialogManager dialogManager = new DialogManager();
+    private DataBaseComparatorConfig dataBaseComparatorConfig = null;
 
     private FXMLLoader fxmlLoader;
     private Parent fxmlKeySelector;
@@ -162,13 +161,9 @@ public class MainController {
         columnFieldsCnt.setCellValueFactory(new PropertyValueFactory<DataBaseTable, Integer>("fieldsCount"));
         columnRowsCnt.setCellValueFactory(new PropertyValueFactory<DataBaseTable, Integer>("rowsCount"));
 
-//        tableDBObjects.setItems(mainService.getTableListForView());
-
         columnFieldName.setCellValueFactory(new PropertyValueFactory<TableDescription, String>("fieldName"));
         columnFieldType.setCellValueFactory(new PropertyValueFactory<TableDescription, String>("fieldType"));
         columnRecordCnt.setCellValueFactory(new PropertyValueFactory<TableDescription, Integer>("recordsCount"));
-
-//        tableTableDescription.setItems(mainService.getTableDescriptionForView());
 
         setupClearButtonField(txt_Host);
         setupClearButtonField(txt_Port);
@@ -177,16 +172,18 @@ public class MainController {
         setupClearButtonField(txt_DB_Link);
         setupClearButtonField(txt_Pattern_Name);
 
-        txt_Host.setText("DK01SN7007");
-        txt_Port.setText("1521");
-        txt_Sid.setText("T7007204");
-        txt_User.setText("TESTIMMD");
-        txt_Pwd.setText("TESTIMMD");
-
         initListeners();
-//        initLoader();
         loadKeyPattern();
-    }
+
+        dataBaseComparatorConfig = DataBaseComparatorConfigManager.loadConfigurationParameters();
+
+        if (dataBaseComparatorConfig != null){
+            txt_Host.setText(dataBaseComparatorConfig.getHostConfig());
+            txt_Port.setText(dataBaseComparatorConfig.getPortConfig());
+            txt_Sid.setText(dataBaseComparatorConfig.getSidConfig());
+            txt_User.setText(dataBaseComparatorConfig.getUserConfig());
+        }
+     }
 
     public void setMainStage(Stage mainStage) {
         this.mainStage = mainStage;
@@ -388,7 +385,7 @@ public class MainController {
                     @Override
                     protected Boolean call() throws Exception {
                         mainService = new MainService();
-                        return mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+                        return mainService.testConnection(txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText(), dataBaseComparatorConfig.getConnectionTypeConfig());
                     }
                 };
                 taskTestConnection.setOnRunning(event -> {
@@ -425,7 +422,7 @@ public class MainController {
                     @Override
                     protected ObservableList<DataBaseTable> call() throws Exception {
                         System.out.println("Start convertListToHashMap " + Thread.currentThread().getName());
-                        mainService.convertListToHashMap(cb_RecordCnt.isSelected(), txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText());
+                        mainService.convertListToHashMap(cb_RecordCnt.isSelected(), txt_Host.getText(), txt_Port.getText(), txt_Sid.getText(), txt_User.getText(), txt_Pwd.getText(), dataBaseComparatorConfig.getConnectionTypeConfig());
                         return mainService.getTableListForView();
                     }
                 };
@@ -528,7 +525,7 @@ public class MainController {
                 Task<String> taskExecuteProcedure = new Task<String>() {
                     @Override
                     protected String call() throws Exception {
-                        return procedureService.executeProcedure(checkBoxArray, keysValueArray, selectedTable.getSchema(), selectedTable.getName());
+                        return procedureService.executeProcedure(checkBoxArray, keysValueArray, selectedTable.getSchema(), selectedTable.getName(), dataBaseComparatorConfig);
                     }
                 };
                 taskExecuteProcedure.setOnRunning(event -> progressIndicator.setVisible(true));
@@ -550,8 +547,8 @@ public class MainController {
         if (keySelectorStage == null) {
             keySelectorStage = new Stage();
             keySelectorStage.setTitle("Select Fields");
-            keySelectorStage.setMinHeight(300);
-            keySelectorStage.setMinWidth(400);
+            keySelectorStage.setMinHeight(600);
+            keySelectorStage.setMinWidth(500);
             keySelectorStage.setResizable(false);
             keySelectorStage.setScene(new Scene(fxmlKeySelector));
 

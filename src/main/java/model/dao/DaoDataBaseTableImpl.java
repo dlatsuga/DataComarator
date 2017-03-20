@@ -13,7 +13,6 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
         this.conn = conn;
     }
 
-
     public DataBaseTable findTableByName(String schema, String tableName) {
         /*String sql = "SELECT table_name FROM information_schema.tables WHERE table_schema = ? and table_name = ?";*/
         String sql =
@@ -50,7 +49,6 @@ public class DaoDataBaseTableImpl implements DaoDataBaseTable {
             return null;
         }
     }
-
 
     public List<DataBaseTable> findAllTablesOfVnT() {
         List<DataBaseTable> listOfTables = new ArrayList<DataBaseTable>();

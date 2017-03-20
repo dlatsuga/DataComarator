@@ -46,9 +46,9 @@ public class MainService {
        return descriptionHashMap;
     }
 
-    public void convertListToHashMap(boolean isUniqueCnt, String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
+    public void convertListToHashMap(boolean isUniqueCnt, String host, String port, String sid, String user, String password, String connectionType) throws ConnectionRefusedException {
         System.out.println("Inside convertListToHashMap " + Thread.currentThread().getName());
-        List<TableDescription> listOfDesc = getDaoTableDescription(host, port, sid, user, password).findAllTablesDescription(isUniqueCnt);
+        List<TableDescription> listOfDesc = getDaoTableDescription(host, port, sid, user, password, connectionType).findAllTablesDescription(isUniqueCnt);
         Set<String> setOfTableKey = daoTableDescription.getSetOfTableKey();
         HashMap<String, ObservableList<TableDescription>> hashMap = new HashMap<>(40);
         for (String s : setOfTableKey) {
@@ -63,8 +63,8 @@ public class MainService {
 //        daoTableDescription.close(); -- do not close till execute -- getTableListForView()
     }
 
-    private DaoTableDescription getDaoTableDescription(String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
-        DaoFactory.createUrl(host, port, sid);
+    private DaoTableDescription getDaoTableDescription(String host, String port, String sid, String user, String password, String connectionType) throws ConnectionRefusedException {
+        DaoFactory.createUrl(host, port, sid, connectionType);
         DaoFactory.setUser(user);
         DaoFactory.setPassword(password);
 
@@ -73,9 +73,9 @@ public class MainService {
     }
 
 
-    public boolean testConnection(String host, String port, String sid, String user, String password) throws ConnectionRefusedException {
+    public boolean testConnection(String host, String port, String sid, String user, String password, String connectionType) throws ConnectionRefusedException {
         isValidConnection = false;
-        DaoFactory.createUrl(host, port, sid);
+        DaoFactory.createUrl(host, port, sid, connectionType);
         DaoFactory.setUser(user);
         DaoFactory.setPassword(password);
         return isValidConnection = DaoFactory.testConnection();

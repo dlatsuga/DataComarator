@@ -4,13 +4,15 @@ package service;
 import exceptions.ConnectionRefusedException;
 import model.dao.DaoFactory;
 import model.dao.DaoProcedure;
+import model.domain.DataBaseComparatorConfig;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 public class ProcedureService {
     private DaoProcedure daoProcedure;
-    public String executeProcedure(boolean[] checkBoxArray, String[] keysValueArray, String selectedTableSchema, String selectedTableName) throws ConnectionRefusedException {
+    public String executeProcedure(boolean[] checkBoxArray, String[] keysValueArray, String selectedTableSchema, String selectedTableName, DataBaseComparatorConfig dataBaseComparatorConfig) throws ConnectionRefusedException, SQLException {
         String result = null;
         if(checkBoxArray[0]){
             System.out.println("Start Create Base Tables");
@@ -31,34 +33,34 @@ public class ProcedureService {
         }
         if(checkBoxArray[3]){
             System.out.println("Start Export");
-            executeExportQuery(keysValueArray[6]);
+            executeExportQuery(keysValueArray[6], dataBaseComparatorConfig);
             System.out.println("Done Export");
         }
         return result;
     }
 
-    private String executeProcedureToCreateBaseTables(String selectedTableSchema, String selectedTableName) throws ConnectionRefusedException {
+    private String executeProcedureToCreateBaseTables(String selectedTableSchema, String selectedTableName) throws ConnectionRefusedException, SQLException {
         DaoFactory daoFactory = DaoFactory.getInstance();
         daoProcedure = daoFactory.getDaoProcedure();
         return daoProcedure.callProcedureToCreateBaseTables(selectedTableSchema, selectedTableName);
     }
 
-    private String executeProcedureUpdateRowNumber(String rnList, String rnSort) throws ConnectionRefusedException {
+    private String executeProcedureUpdateRowNumber(String rnList, String rnSort) throws ConnectionRefusedException, SQLException {
         DaoFactory daoFactory = DaoFactory.getInstance();
         daoProcedure = daoFactory.getDaoProcedure();
         return daoProcedure.callProcedureToUpdateRowNumber(rnList, rnSort);
     }
 
-    private String executeProcedureToCreateResultTables(String[] keysValueArray) throws ConnectionRefusedException {
+    private String executeProcedureToCreateResultTables(String[] keysValueArray) throws ConnectionRefusedException, SQLException {
         DaoFactory daoFactory = DaoFactory.getInstance();
         daoProcedure = daoFactory.getDaoProcedure();
         return daoProcedure.callProcedureToCreateResultTables(parametersConverter(keysValueArray));
     }
 
-    private void executeExportQuery(String splitKey) throws ConnectionRefusedException {
+    private void executeExportQuery(String splitKey, DataBaseComparatorConfig dataBaseComparatorConfig) throws ConnectionRefusedException, SQLException {
         DaoFactory daoFactory = DaoFactory.getInstance();
         daoProcedure = daoFactory.getDaoProcedure();
-        daoProcedure.executeExportQuery(splitKey);
+        daoProcedure.executeExportQuery(splitKey, dataBaseComparatorConfig);
     }
 
 //  0    lbl_Key.getText()

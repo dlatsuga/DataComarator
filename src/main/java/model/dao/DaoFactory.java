@@ -34,9 +34,12 @@ public class DaoFactory {
     public static void setUrl(String url) {
         DaoFactory.url = url;
     }
-    public static void createUrl(String host, String port, String sid) {
-//        DaoFactory.url = "jdbc:postgresql://" + host + ":" + port + "/" + sid;
-        DaoFactory.url = "jdbc:oracle:thin:@" + host + ":" + port + ":" + sid;
+    public static void createUrl(String host, String port, String sid, String connectionType) {
+
+        DaoFactory.url = "jdbc:oracle:thin:@" + host + ":" + port + connectionType + sid; // service name
+//        DaoFactory.url = "jdbc:oracle:thin:@" + host + ":" + port + "/" + sid; // service name
+//        DaoFactory.url = "jdbc:oracle:thin:@" + host + ":" + port + ":" + sid; // sid
+
         System.out.println(url);
     }
     public static String getUser() {

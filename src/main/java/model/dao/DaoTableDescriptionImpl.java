@@ -50,7 +50,7 @@ public class DaoTableDescriptionImpl implements DaoTableDescription {
             uniqueCnt =
                     "    ,case \n" +
                     "      when cc.data_type = 'VARCHAR2' then\n" +
-                    "      TESTIMMD.REC_COUNT(cc.column_name,cc.table_name,cc.owner)\n" +
+                    "      REC_COUNT(cc.column_name,cc.table_name,cc.owner)\n" +
                     "      else 0\n" +
                     "    end as cnt\n";
         }else{

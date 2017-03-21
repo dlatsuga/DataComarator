@@ -60,7 +60,7 @@ public class ProcedureService {
     private void executeExportQuery(String splitKey, DataBaseComparatorConfig dataBaseComparatorConfig) throws ConnectionRefusedException, SQLException {
         DaoFactory daoFactory = DaoFactory.getInstance();
         daoProcedure = daoFactory.getDaoProcedure();
-        daoProcedure.executeExportQuery(splitKey, dataBaseComparatorConfig);
+        daoProcedure.executeExportQuery(createSplitKeyForExport(splitKey), dataBaseComparatorConfig);
     }
 
 //  0    lbl_Key.getText()
@@ -82,9 +82,9 @@ public class ProcedureService {
             arrayOfParametersToCreateResultTable[3] = createJoinCondition(keysValueArray[0], true); // master join condition
             arrayOfParametersToCreateResultTable[4] = createJoinCondition(keysValueArray[0], false); // test join condition
 
-            arrayOfParametersToCreateResultTable[5] = createGroupByKey(keysValueArray[5]);  // group_by_fields
+            arrayOfParametersToCreateResultTable[5] = createGroupSplitKey(keysValueArray[5]);  // group_by_fields
 
-            arrayOfParametersToCreateResultTable[6] = createSplitKey(keysValueArray[6]);  // split_fields
+            arrayOfParametersToCreateResultTable[6] = createGroupSplitKey(keysValueArray[6]);  // split_fields
 
         return arrayOfParametersToCreateResultTable;
     }
@@ -153,7 +153,7 @@ public class ProcedureService {
         return result;
     }
 
-    private String createGroupByKey(String groupByFields){
+    private String createGroupSplitKey(String groupByFields){
         List<String> listGroupByFields = splitFields(groupByFields);
         StringBuilder sb = new StringBuilder();
         String tmp;
@@ -162,20 +162,20 @@ public class ProcedureService {
             tmp = " || nvl(m." + fieldName + ",t." + fieldName +")";
             sb.append(tmp);
         }
-        result = sb.toString().substring(4, sb.toString().length()) + " GROUP_KEY";
+        result = sb.toString().substring(4, sb.toString().length());
         return result;
     }
 
-    private String createSplitKey(String splitFields){
-        List<String> listSplitFields = splitFields(splitFields);
+    private String createSplitKeyForExport(String groupByFields){
+        List<String> listGroupByFields = splitFields(groupByFields);
         StringBuilder sb = new StringBuilder();
         String tmp;
         String result;
-        for (String fieldName : listSplitFields) {
-            tmp = " || nvl(m." + fieldName + ",t." + fieldName +")";
+        for (String fieldName : listGroupByFields) {
+            tmp = " || " + fieldName;
             sb.append(tmp);
         }
-        result = sb.toString().substring(4, sb.toString().length()) + " SPLIT_KEY";
+        result = sb.toString().substring(4, sb.toString().length());
         return result;
     }
 }

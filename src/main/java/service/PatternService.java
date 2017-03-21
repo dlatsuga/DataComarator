@@ -35,7 +35,7 @@ public class PatternService {
     public void loadKeyPatterns() {
 
         gson = new Gson();
-        patternsName = new HashSet<>();
+        patternsName = new TreeSet<>();
 
 
 //        try {

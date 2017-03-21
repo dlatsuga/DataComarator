@@ -33,6 +33,7 @@ import utils.DialogManager;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 
 public class MainController {
 
@@ -196,7 +197,6 @@ public class MainController {
 
                 selectedTable = (DataBaseTable) newValue;
                 selectedTableDescriptionObservableList = (ObservableList<TableDescription>) mainService.getHashMapOfTableDesc().get(selectedTable.getObjectKey());
-
                 createListOfFields(selectedTableDescriptionObservableList);
                 tableTableDescription.setItems(selectedTableDescriptionObservableList);
 
@@ -310,6 +310,9 @@ public class MainController {
         btn_Initial_Fields.setDisable(false);
         btn_Group_Key.setDisable(false);
         btn_Split_Key.setDisable(false);
+
+        btn_Test_Conn.setDisable(false);
+        btn_Load_Data.setDisable(false);
     }
 
     private void disableButtons(){
@@ -322,6 +325,9 @@ public class MainController {
         btn_Split_Key.setDisable(true);
 
         btn_Execute.setDisable(true);
+
+        btn_Test_Conn.setDisable(true);
+        btn_Load_Data.setDisable(true);
     }
 
     private void setupClearButtonField(CustomTextField customTextField) {
@@ -346,20 +352,12 @@ public class MainController {
     }
 
     private void initLoader() {
-        System.out.println("Inside initLoader 1 " + Thread.currentThread().getName());
+        System.out.println("Inside initLoader " + Thread.currentThread().getName());
         if(fxmlLoader == null){
             try {
-
                 fxmlLoader = new FXMLLoader(getClass().getResource("/view/selector_form.fxml"));
-
-//                fxmlLoader.setLocation(getClass().getResource("/view/selector_form.fxml"));
-                System.out.println("Inside initLoader 2 " + Thread.currentThread().getName());
                 fxmlKeySelector = (Parent) fxmlLoader.load();
-                System.out.println("Inside initLoader 3 " + Thread.currentThread().getName());
                 keySelectorController = fxmlLoader.getController();
-
-
-                System.out.println("Inside initLoader 6 " + Thread.currentThread().getName());
             } catch (IOException e) {
                 System.out.println("IOException " + Thread.currentThread().getName());
                 e.printStackTrace();
@@ -395,6 +393,7 @@ public class MainController {
                 });
                 taskTestConnection.setOnSucceeded(event -> {
                     System.out.println("setOnSucceeded " + Thread.currentThread().getName());
+                        btn_Test_Conn.setDisable(false);
                         btn_Load_Data.setDisable(false);
                         pane_connection.getStyleClass().clear();
                         pane_connection.getStyleClass().add("subMenu");
@@ -402,12 +401,11 @@ public class MainController {
                 });
                 taskTestConnection.setOnFailed(event -> {
                     System.out.println("setOnFailed " + Thread.currentThread().getName());
+                        btn_Test_Conn.setDisable(false);
                         pane_connection.getStyleClass().clear();
                         pane_connection.getStyleClass().add("rejected");
                         progressIndicator.setVisible(false);
-
                         dialogManager.showErrorDialog((Exception) taskTestConnection.getException());
-
                 });
 
                 new Thread(taskTestConnection).start();
@@ -416,6 +414,7 @@ public class MainController {
             case "btn_Load_Data":
                 System.out.println("Start Load Data " + Thread.currentThread().getName());
                 disableButtons();
+                setDefaultValueForCheckBox();
                 disableCheckBox();
 
                 Task<ObservableList<DataBaseTable>> taskLoadData = new Task<ObservableList<DataBaseTable>>() {
@@ -511,6 +510,9 @@ public class MainController {
                 selectionView.getTargetItems().clear();
                 break;
             case "btn_Execute":
+
+                disableButtons();
+
                 boolean[] checkBoxArray = new boolean[]{cb_Create_Base_Tables.isSelected()
                                                        ,cb_Update_RN.isSelected()
                                                        ,cb_Create_Res_Tables.isSelected()
@@ -530,12 +532,16 @@ public class MainController {
                 };
                 taskExecuteProcedure.setOnRunning(event -> progressIndicator.setVisible(true));
                 taskExecuteProcedure.setOnSucceeded(event -> {
+                    enableButtons();
+                    btn_Execute.setDisable(false);
                     progressIndicator.setVisible(false);
                     System.out.println(taskExecuteProcedure.getValue());
                 });
                 taskExecuteProcedure.setOnFailed(event -> {
-                        progressIndicator.setVisible(false);
-                        dialogManager.showErrorDialog((Exception) taskExecuteProcedure.getException());
+                    enableButtons();
+                    btn_Execute.setDisable(false);
+                    progressIndicator.setVisible(false);
+                    dialogManager.showErrorDialog((Exception) taskExecuteProcedure.getException());
                 });
                 new Thread(taskExecuteProcedure).start();
                 break;

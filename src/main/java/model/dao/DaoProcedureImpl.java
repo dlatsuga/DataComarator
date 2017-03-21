@@ -7,6 +7,7 @@ import java.io.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DaoProcedureImpl implements DaoProcedure {
@@ -77,32 +78,55 @@ public class DaoProcedureImpl implements DaoProcedure {
         String timeStamp = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(new Timestamp(System.currentTimeMillis()));
         int fetchSize = dataBaseComparatorConfig.getFetchSize();
 
+        /*Analysis*/
         if(dataBaseComparatorConfig.isExportTotalAnalysisData())
-
-            System.out.println(dataBaseComparatorConfig.isExportTotalAnalysisData());
-
             exportTotalAnalysisData(timeStamp, fetchSize);
         if(dataBaseComparatorConfig.isExportSplitAnalysisData())
-
-            System.out.println(dataBaseComparatorConfig.isExportTotalAnalysisData());
-
             exportSplitAnalysisData(timeStamp, fetchSize);
+
+        /*Compare*/
         if(dataBaseComparatorConfig.isExportTotalCompareData())
             exportTotalCompareData(timeStamp, fetchSize);
         if(dataBaseComparatorConfig.isExportSplitCompareData())
             exportSplitCompareData(timeStamp, fetchSize);
+
+        /*ExtraMaster*/
         if(dataBaseComparatorConfig.isExportTotalExtraMaster())
             exportTotalExtraMaster(timeStamp, fetchSize);
+        if(dataBaseComparatorConfig.isExportSplitExtraMaster())
+            exportSplitExtraMaster(timeStamp, fetchSize);
+
+        /*ExtraTest*/
         if(dataBaseComparatorConfig.isExportTotalExtraTest())
             exportTotalExtraTest(timeStamp, fetchSize);
-//        exportSqlPlusScript();
+        if(dataBaseComparatorConfig.isExportSplitExtraTest())
+            exportSplitExtraTest(timeStamp, fetchSize);
+
+        /*Deviations*/
+        if(dataBaseComparatorConfig.isExportTotalDeviationsData())
+            exportTotalDeviations(timeStamp, fetchSize);
+        if(dataBaseComparatorConfig.isExportSplitDeviationsData())
+            exportSplitDeviations(timeStamp, fetchSize);
+
+        /*OriginalMaster*/
+        if(dataBaseComparatorConfig.isExportTotalOriginalMaster())
+            exportTotalOriginalMaster(timeStamp, fetchSize, splitKey);
+        if(dataBaseComparatorConfig.isExportSplitOriginalMaster())
+            exportSplitOriginalMaster(timeStamp, fetchSize, splitKey);
+
+        /*OriginalTest*/
+        if(dataBaseComparatorConfig.isExportTotalOriginalTest())
+            exportTotalOriginalTest(timeStamp, fetchSize, splitKey);
+        if(dataBaseComparatorConfig.isExportSplitOriginalTest())
+            exportSplitOriginalTest(timeStamp, fetchSize, splitKey);
+
     }
 
-    private void getUniqueDataForFilter(String sql_base, List<String> listForFilter) throws SQLException {
+    private void getUniqueDataForFilter(String sql_base, HashMap<String, Integer> mapForFilter) throws SQLException {
         PreparedStatement preparedStatement = conn.prepareStatement(sql_base);
         ResultSet resultSetOfUniqueDataForFilter = preparedStatement.executeQuery();
         while (resultSetOfUniqueDataForFilter.next()) {
-            listForFilter.add(resultSetOfUniqueDataForFilter.getString(1));
+            mapForFilter.put(resultSetOfUniqueDataForFilter.getString(1), resultSetOfUniqueDataForFilter.getInt(2));
         }
     }
 
@@ -139,7 +163,6 @@ public class DaoProcedureImpl implements DaoProcedure {
                 fieldForQuery = "*";
             }
             sql = "Select " + fieldForQuery + " from VT_ANALYSIS_DTLS ORDER BY Diff, M_TECH_KEY";
-            System.out.println(sql);
 
             statement.setFetchSize(fetchSize);
             ResultSet res = statement.executeQuery(sql);
@@ -149,15 +172,16 @@ public class DaoProcedureImpl implements DaoProcedure {
             file.getParentFile().mkdirs();
 
             writeCsvFile(file, res);
+
+        System.out.println("exportTotalAnalysisData");
     }
-
     private void exportSplitAnalysisData(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY from VT_ANALYSIS_DTLS group by SPLIT_KEY";
-        List<String> listForFilter = new ArrayList<>();
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_ANALYSIS_DTLS group by SPLIT_KEY";
+        HashMap<String, Integer> mapForFilter= new HashMap<>();
 
-            getUniqueDataForFilter(sql_base, listForFilter);
+            getUniqueDataForFilter(sql_base, mapForFilter);
 
-        for (String filterValue : listForFilter) {
+        for (String filterValue : mapForFilter.keySet()) {
             String sqlFields = "SELECT * FROM(\n" +
                     "SELECT \n" +
                     "   tt.COLUMN_ID\n" +
@@ -170,36 +194,30 @@ public class DaoProcedureImpl implements DaoProcedure {
             Statement statement = conn.createStatement();
             ResultSet resBase = statement.executeQuery(sqlFields);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Diff");
+            stringBuilder.append("DIFF");
             while (resBase.next()){
                 stringBuilder.append(", ");
                 stringBuilder.append(resBase.getString(2));
             }
             String fieldForQuery = stringBuilder.toString();
-            if(fieldForQuery.equals("Diff")){
+            if(fieldForQuery.equals("DIFF")){
                 fieldForQuery = "*";
             }
-            String sql = "Select " + fieldForQuery + " from VT_ANALYSIS_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
-
-            System.out.println(sql);
+            String sql = "Select " + fieldForQuery + " from VT_ANALYSIS_DTLS where SPLIT_KEY = ? ORDER BY DIFF, M_TECH_KEY";
 
             PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
             preparedStatement2.setString(1, filterValue);
             preparedStatement2.setFetchSize(fetchSize);
-
             ResultSet res = preparedStatement2.executeQuery();
-
-            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\analysis_data\\" + filterValue + "\\" + filterValue + "__analysis_data.csv";
+            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\analysis_data\\" + filterValue + "\\" + filterValue + "_analysis_data.csv";
             File file = new File(path);
-
             file.getParentFile().mkdirs();
-
             writeCsvFile(file, res);
         }
+        System.out.println("exportSplitAnalysisData");
     }
 
     private void exportTotalCompareData(String timeStamp, int fetchSize) throws SQLException {
-
             String sqlFields = "SELECT * FROM(\n" +
                 "SELECT \n" +
                 "   tt.COLUMN_ID\n" +
@@ -213,18 +231,18 @@ public class DaoProcedureImpl implements DaoProcedure {
             Statement statement = conn.createStatement();
             ResultSet resBase = statement.executeQuery(sqlFields);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("Diff");
+            stringBuilder.append("DIFF");
             while (resBase.next()){
                 stringBuilder.append(", ");
                 stringBuilder.append(resBase.getString(2));
             }
 
             String fieldForQuery = stringBuilder.toString();
-            if(fieldForQuery.equals("Diff")){
+            if(fieldForQuery.equals("DIFF")){
                 fieldForQuery = "*";
             }
 
-            String sql = "Select " + fieldForQuery + " from VT_COMPARE_DTLS ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select " + fieldForQuery + " from VT_COMPARE_DTLS ORDER BY DIFF, M_TECH_KEY";
             statement.setFetchSize(fetchSize);
 
             ResultSet res = statement.executeQuery(sql);
@@ -234,15 +252,17 @@ public class DaoProcedureImpl implements DaoProcedure {
             file.getParentFile().mkdirs();
 
             writeCsvFile(file, res);
+
+        System.out.println("exportTotalCompareData");
     }
-
     private void exportSplitCompareData(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY from VT_COMPARE_DTLS group by SPLIT_KEY";
-        List<String> listForFilter = new ArrayList<>();
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_COMPARE_DTLS group by SPLIT_KEY";
 
-            getUniqueDataForFilter(sql_base, listForFilter);
+        HashMap<String, Integer> mapForFilter= new HashMap<>();
 
-        for (String filterValue : listForFilter) {
+            getUniqueDataForFilter(sql_base, mapForFilter);
+
+        for (String filterValue : mapForFilter.keySet()) {
             String sqlFields = "SELECT * FROM(\n" +
                     "SELECT \n" +
                     "   tt.COLUMN_ID\n" +
@@ -268,25 +288,26 @@ public class DaoProcedureImpl implements DaoProcedure {
 
             String sql = "Select " + fieldForQuery + " from VT_COMPARE_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
 
-            System.out.println(sql);
-
             PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
             preparedStatement2.setString(1, filterValue);
             preparedStatement2.setFetchSize(fetchSize);
 
             ResultSet res = preparedStatement2.executeQuery();
 
-            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\compare_data\\" + filterValue + "\\" + filterValue + "__compare_data.csv";
+            String status = mapForFilter.get(filterValue) == 0 ? "passed" : "failed";
+
+            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\compare_data\\" + filterValue + "\\" + filterValue + "_compare_data_" + status + ".csv";
             File file = new File(path);
 
             file.getParentFile().mkdirs();
 
             writeCsvFile(file, res);
         }
+        System.out.println("exportSplitCompareData");
     }
 
     private void exportTotalExtraMaster(String timeStamp, int fetchSize) throws SQLException {
-            String sql = "Select * from VT_EXTRA_MASTER ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select * from VT_EXTRA_MASTER_DTLS ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
             statement.setFetchSize(fetchSize);
 
@@ -297,10 +318,30 @@ public class DaoProcedureImpl implements DaoProcedure {
             file.getParentFile().mkdirs();
 
             writeCsvFile(file, res);
+        System.out.println("exportTotalExtraMaster");
+    }
+    private void exportSplitExtraMaster(String timeStamp, int fetchSize) throws SQLException {
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_EXTRA_MASTER_DTLS group by SPLIT_KEY";
+        HashMap<String, Integer> mapForFilter= new HashMap<>();
+        getUniqueDataForFilter(sql_base, mapForFilter);
+
+        for (String filterValue : mapForFilter.keySet()) {
+            String sql = "Select * from VT_EXTRA_MASTER_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, filterValue);
+            preparedStatement.setFetchSize(fetchSize);
+            ResultSet res = preparedStatement.executeQuery();
+            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\compare_data\\" + filterValue + "\\" + filterValue + "_extra_master_data.csv";
+
+            File file = new File(path);
+            file.getParentFile().mkdirs();
+            writeCsvFile(file, res);
+        }
+        System.out.println("exportSplitExtraMaster");
     }
 
     private void exportTotalExtraTest(String timeStamp, int fetchSize) throws SQLException {
-            String sql = "Select * from VT_EXTRA_TEST ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select * from VT_EXTRA_TEST_DTLS ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
             statement.setFetchSize(fetchSize);
 
@@ -311,6 +352,129 @@ public class DaoProcedureImpl implements DaoProcedure {
             file.getParentFile().mkdirs();
 
             writeCsvFile(file, res);
+        System.out.println("exportTotalExtraTest");
+    }
+    private void exportSplitExtraTest(String timeStamp, int fetchSize) throws SQLException {
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_EXTRA_TEST_DTLS group by SPLIT_KEY";
+        HashMap<String, Integer> mapForFilter= new HashMap<>();
+        getUniqueDataForFilter(sql_base, mapForFilter);
+
+        for (String filterValue : mapForFilter.keySet()) {
+            String sql = "Select * from VT_EXTRA_TEST_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, filterValue);
+            preparedStatement.setFetchSize(fetchSize);
+            ResultSet res = preparedStatement.executeQuery();
+            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\compare_data\\" + filterValue + "\\" + filterValue + "_extra_test_data.csv";
+
+            File file = new File(path);
+            file.getParentFile().mkdirs();
+            writeCsvFile(file, res);
+        }
+        System.out.println("exportSplitExtraTest");
+    }
+
+    private void exportTotalDeviations(String timeStamp, int fetchSize) throws SQLException {
+        String sql = "Select * from VT_COMPARE_DTLS where Diff > 0 ORDER BY Diff, M_TECH_KEY";
+        Statement statement = conn.createStatement();
+        statement.setFetchSize(fetchSize);
+
+        ResultSet res = statement.executeQuery(sql);
+
+        String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\total_deviations_data.csv";
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        writeCsvFile(file, res);
+        System.out.println("exportTotalDeviations");
+    }
+    private void exportSplitDeviations(String timeStamp, int fetchSize) throws SQLException {
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_COMPARE_DTLS where DIFF > 0 group by SPLIT_KEY";
+        HashMap<String, Integer> mapForFilter= new HashMap<>();
+        getUniqueDataForFilter(sql_base, mapForFilter);
+
+        for (String filterValue : mapForFilter.keySet()) {
+            String sql = "Select * from VT_COMPARE_DTLS where SPLIT_KEY = ? and DIFF > 0 ORDER BY DIFF, M_TECH_KEY";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, filterValue);
+            preparedStatement.setFetchSize(fetchSize);
+            ResultSet res = preparedStatement.executeQuery();
+            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\compare_data\\" + filterValue + "\\" + filterValue + "_deviations_data.csv";
+
+            File file = new File(path);
+            file.getParentFile().mkdirs();
+            writeCsvFile(file, res);
+        }
+        System.out.println("exportSplitDeviations");
+    }
+
+    private void exportTotalOriginalMaster(String timeStamp, int fetchSize, String splitKey) throws SQLException {
+        System.out.println(splitKey);
+        String sql = "Select * from VT_REPLICA_MASTER_DTLS order by " + splitKey;
+        Statement statement = conn.createStatement();
+        statement.setFetchSize(fetchSize);
+
+        ResultSet res = statement.executeQuery(sql);
+
+        String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\total_original_master_data.csv";
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        writeCsvFile(file, res);
+        System.out.println("exportTotalOriginalMaster");
+    }
+    private void exportSplitOriginalMaster(String timeStamp, int fetchSize, String splitKey) throws SQLException {
+        String sql_base = "Select " + splitKey + ", sum(0) sum_ from VT_REPLICA_MASTER_DTLS group by " + splitKey;
+        HashMap<String, Integer> mapForFilter= new HashMap<>();
+        getUniqueDataForFilter(sql_base, mapForFilter);
+
+        for (String filterValue : mapForFilter.keySet()) {
+            String sql = "Select * from VT_REPLICA_MASTER_DTLS where " + splitKey + " = ? ";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, filterValue);
+            preparedStatement.setFetchSize(fetchSize);
+            ResultSet res = preparedStatement.executeQuery();
+            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\compare_data\\" + filterValue + "\\" + filterValue + "_original_master_data.csv";
+
+            File file = new File(path);
+            file.getParentFile().mkdirs();
+            writeCsvFile(file, res);
+        }
+        System.out.println("exportSplitOriginalMaster");
+    }
+
+    private void exportTotalOriginalTest(String timeStamp, int fetchSize, String splitKey) throws SQLException {
+        String sql = "Select * from VT_REPLICA_TEST_DTLS order by " + splitKey;
+        Statement statement = conn.createStatement();
+        statement.setFetchSize(fetchSize);
+
+        ResultSet res = statement.executeQuery(sql);
+
+        String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\total_original_test_data.csv";
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+
+        writeCsvFile(file, res);
+        System.out.println("exportTotalOriginalTest");
+    }
+    private void exportSplitOriginalTest(String timeStamp, int fetchSize, String splitKey) throws SQLException {
+        String sql_base = "Select " + splitKey + ", sum(0) sum_ from VT_REPLICA_TEST_DTLS group by " + splitKey;
+        HashMap<String, Integer> mapForFilter= new HashMap<>();
+        getUniqueDataForFilter(sql_base, mapForFilter);
+
+        for (String filterValue : mapForFilter.keySet()) {
+            String sql = "Select * from VT_REPLICA_TEST_DTLS where " + splitKey + " = ? ";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, filterValue);
+            preparedStatement.setFetchSize(fetchSize);
+            ResultSet res = preparedStatement.executeQuery();
+            String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\compare_data\\" + filterValue + "\\" + filterValue + "_original_test_data.csv";
+
+            File file = new File(path);
+            file.getParentFile().mkdirs();
+            writeCsvFile(file, res);
+        }
+        System.out.println("exportSplitOriginalTest");
     }
 
     public void close() {

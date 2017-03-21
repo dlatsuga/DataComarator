@@ -11,9 +11,7 @@ import model.dao.DaoTableDescriptionImpl;
 import model.domain.DataBaseTable;
 import model.domain.TableDescription;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MainService {
@@ -55,6 +53,7 @@ public class MainService {
             List<TableDescription> result = listOfDesc.stream() 			//convert list to stream
                     .filter(line -> s. equals (line.getTableKey()))
                     .collect(Collectors.toList());
+            result.sort((left, right) -> left.getFieldName().compareTo(right.getFieldName()));
             tableDescriptionList = FXCollections.observableArrayList(result);
             hashMap.put(s, tableDescriptionList);
         }

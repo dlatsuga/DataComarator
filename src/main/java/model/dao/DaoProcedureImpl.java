@@ -146,7 +146,7 @@ public class DaoProcedureImpl implements DaoProcedure {
                             "  ,tt.column_name\n" +
                             "  ,REC_SUM(tt.column_name, tt.table_name, tt.owner, 'All') sum_\n" +
                             "FROM all_tab_columns tt \n" +
-                            "WHERE tt.table_name = upper('VT_ANALYSIS_DTLS') and tt.COLUMN_ID > 1)\n" +
+                            "WHERE tt.table_name = upper('VT_ANALYSIS') and tt.COLUMN_ID > 1)\n" +
                             "WHERE sum_ > 0\n" +
                             "ORDER BY COLUMN_ID";
             Statement statement = conn.createStatement();
@@ -162,7 +162,7 @@ public class DaoProcedureImpl implements DaoProcedure {
             if(fieldForQuery.equals("Diff")){
                 fieldForQuery = "*";
             }
-            sql = "Select " + fieldForQuery + " from VT_ANALYSIS_DTLS ORDER BY Diff, M_TECH_KEY";
+            sql = "Select " + fieldForQuery + " from VT_ANALYSIS ORDER BY Diff, M_TECH_KEY";
 
             statement.setFetchSize(fetchSize);
             ResultSet res = statement.executeQuery(sql);
@@ -176,7 +176,7 @@ public class DaoProcedureImpl implements DaoProcedure {
         System.out.println("exportTotalAnalysisData");
     }
     private void exportSplitAnalysisData(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_ANALYSIS_DTLS group by SPLIT_KEY";
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_ANALYSIS group by SPLIT_KEY";
         HashMap<String, Integer> mapForFilter= new HashMap<>();
 
             getUniqueDataForFilter(sql_base, mapForFilter);
@@ -188,7 +188,7 @@ public class DaoProcedureImpl implements DaoProcedure {
                     "  ,tt.column_name\n" +
                     "  ,REC_SUM(tt.column_name, tt.table_name, tt.owner, '" + filterValue + "') sum_\n" +
                     "FROM all_tab_columns tt \n" +
-                    "WHERE tt.table_name = upper('VT_ANALYSIS_DTLS') and tt.COLUMN_ID > 1)\n" +
+                    "WHERE tt.table_name = upper('VT_ANALYSIS') and tt.COLUMN_ID > 1)\n" +
                     "WHERE sum_ > 0\n" +
                     "ORDER BY COLUMN_ID";
             Statement statement = conn.createStatement();
@@ -203,7 +203,7 @@ public class DaoProcedureImpl implements DaoProcedure {
             if(fieldForQuery.equals("DIFF")){
                 fieldForQuery = "*";
             }
-            String sql = "Select " + fieldForQuery + " from VT_ANALYSIS_DTLS where SPLIT_KEY = ? ORDER BY DIFF, M_TECH_KEY";
+            String sql = "Select " + fieldForQuery + " from VT_ANALYSIS where SPLIT_KEY = ? ORDER BY DIFF, M_TECH_KEY";
 
             PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
             preparedStatement2.setString(1, filterValue);
@@ -224,7 +224,7 @@ public class DaoProcedureImpl implements DaoProcedure {
                 "  ,tt.column_name\n" +
                 "  ,REC_SUM(tt.column_name, tt.table_name, tt.owner, 'All') sum_\n" +
                 "FROM all_tab_columns tt \n" +
-                "WHERE tt.table_name = upper('VT_COMPARE_DTLS') and tt.COLUMN_ID > 1)\n" +
+                "WHERE tt.table_name = upper('VT_COMPARE') and tt.COLUMN_ID > 1)\n" +
                 "WHERE sum_ > 0\n" +
                 "ORDER BY COLUMN_ID";
 
@@ -242,7 +242,7 @@ public class DaoProcedureImpl implements DaoProcedure {
                 fieldForQuery = "*";
             }
 
-            String sql = "Select " + fieldForQuery + " from VT_COMPARE_DTLS ORDER BY DIFF, M_TECH_KEY";
+            String sql = "Select " + fieldForQuery + " from VT_COMPARE ORDER BY DIFF, M_TECH_KEY";
             statement.setFetchSize(fetchSize);
 
             ResultSet res = statement.executeQuery(sql);
@@ -256,7 +256,7 @@ public class DaoProcedureImpl implements DaoProcedure {
         System.out.println("exportTotalCompareData");
     }
     private void exportSplitCompareData(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_COMPARE_DTLS group by SPLIT_KEY";
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_COMPARE group by SPLIT_KEY";
 
         HashMap<String, Integer> mapForFilter= new HashMap<>();
 
@@ -269,7 +269,7 @@ public class DaoProcedureImpl implements DaoProcedure {
                     "  ,tt.column_name\n" +
                     "  ,REC_SUM(tt.column_name, tt.table_name, tt.owner, '" + filterValue + "') sum_\n" +
                     "FROM all_tab_columns tt \n" +
-                    "WHERE tt.table_name = upper('VT_COMPARE_DTLS') and tt.COLUMN_ID > 1)\n" +
+                    "WHERE tt.table_name = upper('VT_COMPARE') and tt.COLUMN_ID > 1)\n" +
                     "WHERE sum_ > 0\n" +
                     "ORDER BY COLUMN_ID";
 
@@ -286,7 +286,7 @@ public class DaoProcedureImpl implements DaoProcedure {
                 fieldForQuery = "*";
             }
 
-            String sql = "Select " + fieldForQuery + " from VT_COMPARE_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select " + fieldForQuery + " from VT_COMPARE where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
 
             PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
             preparedStatement2.setString(1, filterValue);
@@ -307,7 +307,7 @@ public class DaoProcedureImpl implements DaoProcedure {
     }
 
     private void exportTotalExtraMaster(String timeStamp, int fetchSize) throws SQLException {
-            String sql = "Select * from VT_EXTRA_MASTER_DTLS ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select * from VT_EXTRA_MASTER ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
             statement.setFetchSize(fetchSize);
 
@@ -321,12 +321,12 @@ public class DaoProcedureImpl implements DaoProcedure {
         System.out.println("exportTotalExtraMaster");
     }
     private void exportSplitExtraMaster(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_EXTRA_MASTER_DTLS group by SPLIT_KEY";
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_EXTRA_MASTER group by SPLIT_KEY";
         HashMap<String, Integer> mapForFilter= new HashMap<>();
         getUniqueDataForFilter(sql_base, mapForFilter);
 
         for (String filterValue : mapForFilter.keySet()) {
-            String sql = "Select * from VT_EXTRA_MASTER_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select * from VT_EXTRA_MASTER where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, filterValue);
             preparedStatement.setFetchSize(fetchSize);
@@ -341,7 +341,7 @@ public class DaoProcedureImpl implements DaoProcedure {
     }
 
     private void exportTotalExtraTest(String timeStamp, int fetchSize) throws SQLException {
-            String sql = "Select * from VT_EXTRA_TEST_DTLS ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select * from VT_EXTRA_TEST ORDER BY Diff, M_TECH_KEY";
             Statement statement = conn.createStatement();
             statement.setFetchSize(fetchSize);
 
@@ -355,12 +355,12 @@ public class DaoProcedureImpl implements DaoProcedure {
         System.out.println("exportTotalExtraTest");
     }
     private void exportSplitExtraTest(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_EXTRA_TEST_DTLS group by SPLIT_KEY";
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_EXTRA_TEST group by SPLIT_KEY";
         HashMap<String, Integer> mapForFilter= new HashMap<>();
         getUniqueDataForFilter(sql_base, mapForFilter);
 
         for (String filterValue : mapForFilter.keySet()) {
-            String sql = "Select * from VT_EXTRA_TEST_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
+            String sql = "Select * from VT_EXTRA_TEST where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, filterValue);
             preparedStatement.setFetchSize(fetchSize);
@@ -375,7 +375,7 @@ public class DaoProcedureImpl implements DaoProcedure {
     }
 
     private void exportTotalDeviations(String timeStamp, int fetchSize) throws SQLException {
-        String sql = "Select * from VT_COMPARE_DTLS where Diff > 0 ORDER BY Diff, M_TECH_KEY";
+        String sql = "Select * from VT_COMPARE where Diff > 0 ORDER BY Diff, M_TECH_KEY";
         Statement statement = conn.createStatement();
         statement.setFetchSize(fetchSize);
 
@@ -389,12 +389,12 @@ public class DaoProcedureImpl implements DaoProcedure {
         System.out.println("exportTotalDeviations");
     }
     private void exportSplitDeviations(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_COMPARE_DTLS where DIFF > 0 group by SPLIT_KEY";
+        String sql_base = "Select SPLIT_KEY, sum(DIFF) sum_ from VT_COMPARE where DIFF > 0 group by SPLIT_KEY";
         HashMap<String, Integer> mapForFilter= new HashMap<>();
         getUniqueDataForFilter(sql_base, mapForFilter);
 
         for (String filterValue : mapForFilter.keySet()) {
-            String sql = "Select * from VT_COMPARE_DTLS where SPLIT_KEY = ? and DIFF > 0 ORDER BY DIFF, M_TECH_KEY";
+            String sql = "Select * from VT_COMPARE where SPLIT_KEY = ? and DIFF > 0 ORDER BY DIFF, M_TECH_KEY";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, filterValue);
             preparedStatement.setFetchSize(fetchSize);
@@ -410,7 +410,7 @@ public class DaoProcedureImpl implements DaoProcedure {
 
     private void exportTotalOriginalMaster(String timeStamp, int fetchSize, String splitKey) throws SQLException {
         System.out.println(splitKey);
-        String sql = "Select * from VT_REPLICA_MASTER_DTLS order by " + splitKey;
+        String sql = "Select * from VT_REPLICA_MASTER order by " + splitKey;
         Statement statement = conn.createStatement();
         statement.setFetchSize(fetchSize);
 
@@ -424,12 +424,12 @@ public class DaoProcedureImpl implements DaoProcedure {
         System.out.println("exportTotalOriginalMaster");
     }
     private void exportSplitOriginalMaster(String timeStamp, int fetchSize, String splitKey) throws SQLException {
-        String sql_base = "Select " + splitKey + ", sum(0) sum_ from VT_REPLICA_MASTER_DTLS group by " + splitKey;
+        String sql_base = "Select " + splitKey + ", sum(0) sum_ from VT_REPLICA_MASTER group by " + splitKey;
         HashMap<String, Integer> mapForFilter= new HashMap<>();
         getUniqueDataForFilter(sql_base, mapForFilter);
 
         for (String filterValue : mapForFilter.keySet()) {
-            String sql = "Select * from VT_REPLICA_MASTER_DTLS where " + splitKey + " = ? ";
+            String sql = "Select * from VT_REPLICA_MASTER where " + splitKey + " = ? ";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, filterValue);
             preparedStatement.setFetchSize(fetchSize);
@@ -444,7 +444,7 @@ public class DaoProcedureImpl implements DaoProcedure {
     }
 
     private void exportTotalOriginalTest(String timeStamp, int fetchSize, String splitKey) throws SQLException {
-        String sql = "Select * from VT_REPLICA_TEST_DTLS order by " + splitKey;
+        String sql = "Select * from VT_REPLICA_TEST order by " + splitKey;
         Statement statement = conn.createStatement();
         statement.setFetchSize(fetchSize);
 
@@ -458,12 +458,12 @@ public class DaoProcedureImpl implements DaoProcedure {
         System.out.println("exportTotalOriginalTest");
     }
     private void exportSplitOriginalTest(String timeStamp, int fetchSize, String splitKey) throws SQLException {
-        String sql_base = "Select " + splitKey + ", sum(0) sum_ from VT_REPLICA_TEST_DTLS group by " + splitKey;
+        String sql_base = "Select " + splitKey + ", sum(0) sum_ from VT_REPLICA_TEST group by " + splitKey;
         HashMap<String, Integer> mapForFilter= new HashMap<>();
         getUniqueDataForFilter(sql_base, mapForFilter);
 
         for (String filterValue : mapForFilter.keySet()) {
-            String sql = "Select * from VT_REPLICA_TEST_DTLS where " + splitKey + " = ? ";
+            String sql = "Select * from VT_REPLICA_TEST where " + splitKey + " = ? ";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, filterValue);
             preparedStatement.setFetchSize(fetchSize);

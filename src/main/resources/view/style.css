@@ -11,3 +11,6 @@
 .tableColumn{
     -fx-font-size: 90%;;
 }
+.notValidKey{
+    -fx-text-fill: red;
+}

@@ -28,6 +28,7 @@ import service.MainService;
 import org.controlsfx.control.ListSelectionView;
 import service.PatternService;
 import service.ProcedureService;
+import service.ValidationService;
 import utils.DataBaseComparatorConfigManager;
 import utils.DialogManager;
 
@@ -215,21 +216,49 @@ public class MainController {
                             chb_Patterns_List.setValue(oldValue);
                             txt_Pattern_Name.clear();
                         }
+                        resetColorOfLabels();
                         setSelectedPattern(newValue);
                     }
                 }
         );
     }
 
-
-
-
-    /*Валидацию полей повесить тут...*/
+    private void resetColorOfLabels() {
+        lbl_Key.getStyleClass().clear();
+        lbl_RN_List.getStyleClass().clear();
+        lbl_RN_Sort.getStyleClass().clear();
+        lbl_Compare_Fields.getStyleClass().clear();
+        lbl_Initial_Fields.getStyleClass().clear();
+        lbl_Group_Key.getStyleClass().clear();
+        lbl_Split_Key.getStyleClass().clear();
+    }
 
     /**
      * Set value for Keys according to Selected pattern*/
     private void setSelectedPattern(String patternName){
+
+        System.out.println("Inside setSelectedPattern -- patternName = " + patternName);
+
         KeyPattern selectedKeyPattern =  patternService.getPatternInstanceByName(patternName);
+
+        if(!ValidationService.validateKey(selectedKeyPattern.getKey_for_join(), listOfSelectedFields)){
+
+            lbl_Key.getStyleClass().add("notValidKey");
+            System.out.println("NOT VALID");
+        }
+
+        if(!ValidationService.validateKey(selectedKeyPattern.getRow_number_list(), listOfSelectedFields))
+            lbl_RN_List.getStyleClass().add("notValidKey");
+        if(!ValidationService.validateKey(selectedKeyPattern.getRow_number_sort(), listOfSelectedFields))
+            lbl_RN_Sort.getStyleClass().add("notValidKey");
+        if(!ValidationService.validateKey(selectedKeyPattern.getCompare_fields(), listOfSelectedFields))
+            lbl_Compare_Fields.getStyleClass().add("notValidKey");
+        if(!ValidationService.validateKey(selectedKeyPattern.getInitial_fields(), listOfSelectedFields))
+            lbl_Initial_Fields.getStyleClass().add("notValidKey");
+        if(!ValidationService.validateKey(selectedKeyPattern.getGroup_fields(), listOfSelectedFields))
+            lbl_Group_Key.getStyleClass().add("notValidKey");
+        if(!ValidationService.validateKey(selectedKeyPattern.getExport_split_key(), listOfSelectedFields))
+            lbl_Split_Key.getStyleClass().add("notValidKey");
 
         lbl_Key.setText(selectedKeyPattern.getKey_for_join());
         lbl_RN_List.setText(selectedKeyPattern.getRow_number_list());
@@ -239,8 +268,6 @@ public class MainController {
         lbl_Group_Key.setText(selectedKeyPattern.getGroup_fields());
         lbl_Split_Key.setText(selectedKeyPattern.getExport_split_key());
     }
-
-
 
     private void loadKeyPattern(){
         patternService.loadKeyPatterns();
@@ -331,15 +358,11 @@ public class MainController {
     }
 
     private void setupClearButtonField(CustomTextField customTextField) {
-
         try {
-
             Method m = TextFields.class.getDeclaredMethod("setupClearButtonField", TextField.class, ObjectProperty.class);
             m.setAccessible(true);
             m.invoke(null, customTextField, customTextField.rightProperty());
-
         }catch (Exception e){
-
             e.printStackTrace();
         }
     }
@@ -567,15 +590,11 @@ public class MainController {
             keySelectorStage.initModality(Modality.WINDOW_MODAL);
             keySelectorStage.initOwner(mainStage);
         }
-
         keySelectorStage.showAndWait();
-
     }
 
     public String generateKey(ObservableList<String> listOfFields){
-
         StringBuffer output = new StringBuffer(200);
-
         if(listOfFields.size() >= 1){
             output.append(listOfFields.get(0));
             for(int i =1; i < listOfFields.size(); i++) {
@@ -583,7 +602,6 @@ public class MainController {
                 output.append(listOfFields.get(i));
             }
         }
-
         return output.toString();
     }
 

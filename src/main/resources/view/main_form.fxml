@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.image.*?>
 <?import org.controlsfx.control.textfield.*?>
 <?import javafx.scene.canvas.*?>
@@ -75,13 +76,34 @@
                   <Button fx:id="btn_Split_Key" disable="true" layoutX="20.0" layoutY="215.0" mnemonicParsing="false" onAction="#actionButtonPressed" prefHeight="25.0" prefWidth="135.0" text="Export Split Key" />
                </children>
             </Pane>
-            <Label fx:id="lbl_Key" layoutX="201.0" layoutY="10.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0" />
-            <Label fx:id="lbl_RN_List" layoutX="200.0" layoutY="45.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0" />
-            <Label fx:id="lbl_RN_Sort" layoutX="199.0" layoutY="80.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0" />
-            <Label fx:id="lbl_Compare_Fields" layoutX="197.0" layoutY="114.0" prefHeight="25.0" prefWidth="750.0" text="All" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0" />
-            <Label fx:id="lbl_Initial_Fields" layoutX="199.0" layoutY="151.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0" />
-            <Label fx:id="lbl_Group_Key" layoutX="200.0" layoutY="185.0" prefHeight="25.0" prefWidth="693.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0" />
-            <Label fx:id="lbl_Split_Key" layoutX="199.0" layoutY="219.0" prefHeight="25.0" prefWidth="693.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0" />
+            <Label fx:id="lbl_Key" layoutX="201.0" layoutY="10.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="lbl_RN_List" layoutX="200.0" layoutY="45.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="lbl_RN_Sort" layoutX="199.0" layoutY="80.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="lbl_Compare_Fields" layoutX="197.0" layoutY="114.0" prefHeight="25.0" prefWidth="750.0" text="All" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="lbl_Initial_Fields" layoutX="199.0" layoutY="151.0" prefHeight="25.0" prefWidth="750.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="lbl_Group_Key" layoutX="200.0" layoutY="185.0" prefHeight="25.0" prefWidth="693.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
+            <Label fx:id="lbl_Split_Key" layoutX="199.0" layoutY="219.0" prefHeight="25.0" prefWidth="693.0" text="..." AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="15.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
          </children>
       </AnchorPane>
    </bottom>

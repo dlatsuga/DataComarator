@@ -74,6 +74,4 @@ public class KeyPattern {
     public void setExport_split_key(String export_split_key) {
         this.export_split_key = export_split_key;
     }
-
-
 }

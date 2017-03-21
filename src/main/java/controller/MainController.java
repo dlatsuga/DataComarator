@@ -551,7 +551,8 @@ public class MainController {
             keySelectorStage.setMinWidth(500);
             keySelectorStage.setResizable(false);
             keySelectorStage.setScene(new Scene(fxmlKeySelector));
-
+            selectionView.setMinHeight(550);
+            selectionView.setMinWidth(450);
             ((Label) selectionView.getSourceHeader()).setText("Available");
             ((Label) selectionView.getTargetHeader()).setText("Selected");
             keySelectorController.getKeySelectorGridPane().add(selectionView, 0, 0);

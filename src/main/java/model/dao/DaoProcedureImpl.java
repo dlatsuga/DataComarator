@@ -134,12 +134,14 @@ public class DaoProcedureImpl implements DaoProcedure {
                 stringBuilder.append(resBase.getString(2));
             }
 
-            statement.setFetchSize(fetchSize);
-            sql = stringBuilder.toString();
-            sql = "Select " + sql + " from VT_ANALYSIS_DTLS ORDER BY Diff, M_TECH_KEY";
-
+            String fieldForQuery = stringBuilder.toString();
+            if(fieldForQuery.equals("Diff")){
+                fieldForQuery = "*";
+            }
+            sql = "Select " + fieldForQuery + " from VT_ANALYSIS_DTLS ORDER BY Diff, M_TECH_KEY";
             System.out.println(sql);
 
+            statement.setFetchSize(fetchSize);
             ResultSet res = statement.executeQuery(sql);
 
             String path = System.getProperty("user.dir") + "\\export\\" + timeStamp + "\\total_analysis_data.csv";
@@ -197,8 +199,32 @@ public class DaoProcedureImpl implements DaoProcedure {
     }
 
     private void exportTotalCompareData(String timeStamp, int fetchSize) throws SQLException {
-            String sql = "Select * from VT_COMPARE ORDER BY Diff, M_TECH_KEY";
+
+            String sqlFields = "SELECT * FROM(\n" +
+                "SELECT \n" +
+                "   tt.COLUMN_ID\n" +
+                "  ,tt.column_name\n" +
+                "  ,REC_SUM(tt.column_name, tt.table_name, tt.owner, 'All') sum_\n" +
+                "FROM all_tab_columns tt \n" +
+                "WHERE tt.table_name = upper('VT_COMPARE_DTLS') and tt.COLUMN_ID > 1)\n" +
+                "WHERE sum_ > 0\n" +
+                "ORDER BY COLUMN_ID";
+
             Statement statement = conn.createStatement();
+            ResultSet resBase = statement.executeQuery(sqlFields);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Diff");
+            while (resBase.next()){
+                stringBuilder.append(", ");
+                stringBuilder.append(resBase.getString(2));
+            }
+
+            String fieldForQuery = stringBuilder.toString();
+            if(fieldForQuery.equals("Diff")){
+                fieldForQuery = "*";
+            }
+
+            String sql = "Select " + fieldForQuery + " from VT_COMPARE_DTLS ORDER BY Diff, M_TECH_KEY";
             statement.setFetchSize(fetchSize);
 
             ResultSet res = statement.executeQuery(sql);
@@ -211,14 +237,39 @@ public class DaoProcedureImpl implements DaoProcedure {
     }
 
     private void exportSplitCompareData(String timeStamp, int fetchSize) throws SQLException {
-        String sql_base = "Select SPLIT_KEY from VT_COMPARE group by SPLIT_KEY";
+        String sql_base = "Select SPLIT_KEY from VT_COMPARE_DTLS group by SPLIT_KEY";
         List<String> listForFilter = new ArrayList<>();
 
             getUniqueDataForFilter(sql_base, listForFilter);
 
         for (String filterValue : listForFilter) {
+            String sqlFields = "SELECT * FROM(\n" +
+                    "SELECT \n" +
+                    "   tt.COLUMN_ID\n" +
+                    "  ,tt.column_name\n" +
+                    "  ,REC_SUM(tt.column_name, tt.table_name, tt.owner, '" + filterValue + "') sum_\n" +
+                    "FROM all_tab_columns tt \n" +
+                    "WHERE tt.table_name = upper('VT_COMPARE_DTLS') and tt.COLUMN_ID > 1)\n" +
+                    "WHERE sum_ > 0\n" +
+                    "ORDER BY COLUMN_ID";
 
-            String sql = "Select * from VT_COMPARE where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
+            Statement statement = conn.createStatement();
+            ResultSet resBase = statement.executeQuery(sqlFields);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Diff");
+            while (resBase.next()){
+                stringBuilder.append(", ");
+                stringBuilder.append(resBase.getString(2));
+            }
+            String fieldForQuery = stringBuilder.toString();
+            if(fieldForQuery.equals("Diff")){
+                fieldForQuery = "*";
+            }
+
+            String sql = "Select " + fieldForQuery + " from VT_COMPARE_DTLS where SPLIT_KEY = ? ORDER BY Diff, M_TECH_KEY";
+
+            System.out.println(sql);
+
             PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
             preparedStatement2.setString(1, filterValue);
             preparedStatement2.setFetchSize(fetchSize);
